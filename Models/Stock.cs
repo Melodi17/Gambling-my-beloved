@@ -17,6 +17,7 @@ public class Stock
     [DataType(DataType.Currency)]
     public decimal UnitPrice { get; set; }
     
+    [Display(Name = "Price Change")]
     public decimal PriceChange => this.GetPriceChange();
     public virtual List<PricePeriod> PriceHistory { get; set; }
     

@@ -24,7 +24,8 @@ namespace Gambling_my_beloved.Controllers
         {
             IQueryable<Company> companies = this._context.Companies
                 .OrderBy(c => c.Name)
-                .Select(x => x);
+                .Select(x => x)
+                .Include(c => c.Stocks);
 
             if (!string.IsNullOrEmpty(searchQuery))
                 companies = companies.Where(c => EF.Functions.Like(c.Name, $"%{searchQuery}%"));
@@ -42,7 +43,8 @@ namespace Gambling_my_beloved.Controllers
                 return NotFound();
             }
 
-            var company = await _context.Companies
+            Company company = await _context.Companies
+                .Include(c => c.Stocks)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (company == null)
             {

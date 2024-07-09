@@ -31,8 +31,6 @@ public class RandomEventService : IHostedService, IDisposable
     {
         decimal initialPrice = stock.UnitPrice;
         decimal priceChange = stock.UnitPrice * stockEvent.Weight * (stockEvent.IsPositive ? 1 : -1);
-        // dial it down a bit
-        priceChange /= 10;
                 
         stock.UpdatePrice(stock.UnitPrice + priceChange);
         
@@ -42,24 +40,26 @@ public class RandomEventService : IHostedService, IDisposable
 
     private TimeSpan GetRandomTimeSpan()
     {
-        return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
+        return TimeSpan.FromSeconds(1);
+        // return TimeSpan.FromSeconds(Global.Random.Next(10, 30));
+        // return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
     }
 
     private void DoWork(object? state)
     {
         using IServiceScope scope = this._scopeFactory.CreateScope();
-        ApplicationDbContext _dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
         this._timer!.Change(this.GetRandomTimeSpan(), TimeSpan.Zero);
 
         StockEvent stockEvent = Global.Random.Next(0, 5) == 0 
             ? StockEvent.GenerateRandomEventForIndustry() 
-            : StockEvent.GenerateRandomEventForCompany(_dbContext.Companies);
+            : StockEvent.GenerateRandomEventForCompany(dbContext.Companies);
 
         if (stockEvent.Industry != null)
         {
             // Get all companies in the industry
-            IQueryable<Company> companies = _dbContext.Companies
+            IQueryable<Company> companies = dbContext.Companies
                 .Where(c => c.Industries.Contains(stockEvent.Industry.Value));
             
             // Apply the event to all companies in the industry
@@ -70,7 +70,7 @@ public class RandomEventService : IHostedService, IDisposable
         else if (stockEvent.Company != null)
         {
             // Apply the event to the company
-            Company company = _dbContext.Companies
+            Company company = dbContext.Companies
                 .Include(c => c.Stocks)
                 .ThenInclude(s => s.PriceHistory)
                 .First(c => c.Id == stockEvent.Company.Id);
@@ -79,11 +79,9 @@ public class RandomEventService : IHostedService, IDisposable
                 UpdatePrice(stock, stockEvent);
         }
         
-        _dbContext.StockEvents.Add(stockEvent);
+        dbContext.StockEvents.Add(stockEvent);
 
-        _dbContext.SaveChanges();
-        
-        _logger.LogInformation("Random Event Service is working.");
+        dbContext.SaveChanges();
     }
 
     public Task StopAsync(CancellationToken stoppingToken)

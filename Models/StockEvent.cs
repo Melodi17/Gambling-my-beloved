@@ -118,7 +118,7 @@ public class StockEvent
         stockEvent.Company = companies.AsEnumerable().OrderBy(x => Guid.NewGuid()).First();
         stockEvent.Type = CompanyEvents[random.Next(CompanyEvents.Length)];
         stockEvent.IsPositive = random.Next(0, 2) == 0;
-        stockEvent.Weight = (decimal)random.NextDouble();
+        stockEvent.Weight = (decimal)random.RandomGaussian(0, Global.Random.Next(10) == 0 ? 0.03 : 0.003);
 
         stockEvent.Description = DescriptionForCompanyEvent(stockEvent.Company, stockEvent.Type, stockEvent.IsPositive);
 

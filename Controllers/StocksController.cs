@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gambling_my_beloved.Data;
 using Gambling_my_beloved.Models;
+using Newtonsoft.Json;
 
 namespace Gambling_my_beloved.Controllers
 {
@@ -49,6 +50,9 @@ namespace Gambling_my_beloved.Controllers
 
             if (stock == null)
                 return NotFound();
+            
+            ViewData["StockHistory"] = JsonConvert.SerializeObject(stock.PriceHistory
+                .Select(p => new { Date = p.Date, Price = p.Price }));
 
             return View(stock);
         }

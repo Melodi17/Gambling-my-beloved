@@ -1,4 +1,6 @@
-﻿namespace Gambling_my_beloved.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Gambling_my_beloved.Models;
 
 public class StockOwnership
 {
@@ -7,7 +9,8 @@ public class StockOwnership
     public int StockId { get; set; }
     public Stock Stock { get; set; }
     
-    public int AccountId { get; set; }
+    public string AccountId { get; set; }
+    [ForeignKey("AccountId")]
     public ApplicationUser Account { get; set; }
     
     public virtual List<Transaction> Transactions { get; set; }

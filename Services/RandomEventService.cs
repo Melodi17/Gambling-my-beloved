@@ -7,15 +7,14 @@ namespace Gambling_my_beloved.Services;
 public class RandomEventService : IHostedService, IDisposable
 {
     private readonly ILogger<RandomEventService> _logger;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IServiceScopeFactory _scopeFactory;
     private Timer? _timer = null;
 
-    public RandomEventService(ILogger<RandomEventService> logger, IServiceProvider provider)
+    public RandomEventService(ILogger<RandomEventService> logger, IServiceScopeFactory scopeFactory)
     {
         this._logger = logger;
 
-        using IServiceScope scope = provider.CreateScope();
-        this._dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        this._scopeFactory = scopeFactory;
     }
 
     public Task StartAsync(CancellationToken stoppingToken)
@@ -30,16 +29,19 @@ public class RandomEventService : IHostedService, IDisposable
 
     private void DoWork(object? state)
     {
+        using IServiceScope scope = this._scopeFactory.CreateScope();
+        ApplicationDbContext _dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        
         this._timer!.Change(this.GetRandomTimeSpan(), TimeSpan.Zero);
 
-        StockEvent stockEvent = Global.Random.Next(0, 2) == 0 
-            ? StockEvent.GenerateRandomEventForCompany(this._dbContext.Companies) 
-            : StockEvent.GenerateRandomEventForIndustry();
+        StockEvent stockEvent = Global.Random.Next(0, 5) == 0 
+            ? StockEvent.GenerateRandomEventForIndustry() 
+            : StockEvent.GenerateRandomEventForCompany(_dbContext.Companies);
 
         if (stockEvent.Industry != null)
         {
             // Get all companies in the industry
-            IQueryable<Company> companies = this._dbContext.Companies
+            IQueryable<Company> companies = _dbContext.Companies
                 .Where(c => c.Industries.Contains(stockEvent.Industry.Value));
             
             // Apply the event to all companies in the industry
@@ -48,15 +50,11 @@ public class RandomEventService : IHostedService, IDisposable
             {
                 decimal priceChange = stock.UnitPrice * stockEvent.Weight * (stockEvent.IsPositive ? 1 : -1);
                 
-                
-                
                 stock.UpdatePrice(stock.UnitPrice + priceChange);
             }
         }
         
-        
-        
-        this._dbContext.StockEvents.Add(stockEvent);
+        _dbContext.StockEvents.Add(stockEvent);
         
         _logger.LogInformation("Random Event Service is working.");
     }

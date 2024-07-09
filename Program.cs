@@ -18,7 +18,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddHostedService<RandomEventService>();
+// builder.Services.AddHostedService<RandomEventService>();
 
 var app = builder.Build();
 

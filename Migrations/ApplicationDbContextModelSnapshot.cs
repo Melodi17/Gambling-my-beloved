@@ -15,7 +15,7 @@ namespace Gambling_my_beloved.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.5");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
 
             modelBuilder.Entity("Gambling_my_beloved.Models.ApplicationUser", b =>
                 {
@@ -91,31 +91,21 @@ namespace Gambling_my_beloved.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("CEO")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Industries")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LogoUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.ToTable("Companies");
                 });
@@ -139,7 +129,7 @@ namespace Gambling_my_beloved.Migrations
 
                     b.HasIndex("StockId");
 
-                    b.ToTable("PricePeriods");
+                    b.ToTable("PricePeriod");
                 });
 
             modelBuilder.Entity("Gambling_my_beloved.Models.Stock", b =>
@@ -152,7 +142,6 @@ namespace Gambling_my_beloved.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Symbol")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("UnitPrice")
@@ -163,6 +152,40 @@ namespace Gambling_my_beloved.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Stocks");
+                });
+
+            modelBuilder.Entity("Gambling_my_beloved.Models.StockEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Industry")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPositive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Weight")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("StockEvents");
                 });
 
             modelBuilder.Entity("Gambling_my_beloved.Models.StockOwnership", b =>
@@ -349,13 +372,6 @@ namespace Gambling_my_beloved.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Gambling_my_beloved.Models.Company", b =>
-                {
-                    b.HasOne("Gambling_my_beloved.Models.Company", null)
-                        .WithMany("Competitors")
-                        .HasForeignKey("CompanyId");
-                });
-
             modelBuilder.Entity("Gambling_my_beloved.Models.PricePeriod", b =>
                 {
                     b.HasOne("Gambling_my_beloved.Models.Stock", "Stock")
@@ -374,6 +390,15 @@ namespace Gambling_my_beloved.Migrations
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Gambling_my_beloved.Models.StockEvent", b =>
+                {
+                    b.HasOne("Gambling_my_beloved.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
                 });
@@ -464,8 +489,6 @@ namespace Gambling_my_beloved.Migrations
 
             modelBuilder.Entity("Gambling_my_beloved.Models.Company", b =>
                 {
-                    b.Navigation("Competitors");
-
                     b.Navigation("Stocks");
                 });
 

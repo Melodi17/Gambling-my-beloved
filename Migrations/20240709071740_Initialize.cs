@@ -57,21 +57,15 @@ namespace Gambling_my_beloved.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false),
-                    CEO = table.Column<string>(type: "TEXT", nullable: false),
-                    LogoUrl = table.Column<string>(type: "TEXT", nullable: false),
-                    Industries = table.Column<string>(type: "TEXT", nullable: false),
-                    CompanyId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    CEO = table.Column<string>(type: "TEXT", nullable: true),
+                    LogoUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    Industries = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Companies", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Companies_Companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "Companies",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -181,12 +175,36 @@ namespace Gambling_my_beloved.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "StockEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Weight = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    IsPositive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CompanyId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Industry = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockEvents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockEvents_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Stocks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Symbol = table.Column<string>(type: "TEXT", nullable: false),
+                    Symbol = table.Column<string>(type: "TEXT", nullable: true),
                     CompanyId = table.Column<int>(type: "INTEGER", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "TEXT", nullable: false)
                 },
@@ -202,7 +220,7 @@ namespace Gambling_my_beloved.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PricePeriods",
+                name: "PricePeriod",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -213,9 +231,9 @@ namespace Gambling_my_beloved.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PricePeriods", x => x.Id);
+                    table.PrimaryKey("PK_PricePeriod", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PricePeriods_Stocks_StockId",
+                        name: "FK_PricePeriod_Stocks_StockId",
                         column: x => x.StockId,
                         principalTable: "Stocks",
                         principalColumn: "Id",
@@ -309,14 +327,14 @@ namespace Gambling_my_beloved.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Companies_CompanyId",
-                table: "Companies",
-                column: "CompanyId");
+                name: "IX_PricePeriod_StockId",
+                table: "PricePeriod",
+                column: "StockId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PricePeriods_StockId",
-                table: "PricePeriods",
-                column: "StockId");
+                name: "IX_StockEvents_CompanyId",
+                table: "StockEvents",
+                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockOwnerships_AccountId1",
@@ -358,7 +376,10 @@ namespace Gambling_my_beloved.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "PricePeriods");
+                name: "PricePeriod");
+
+            migrationBuilder.DropTable(
+                name: "StockEvents");
 
             migrationBuilder.DropTable(
                 name: "Transactions");

@@ -56,7 +56,7 @@ namespace Gambling_my_beloved.Controllers
         // GET: Stocks/Create
         public IActionResult Create()
         {
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id");
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
             return View();
         }
 
@@ -74,7 +74,7 @@ namespace Gambling_my_beloved.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Id", stock.CompanyId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", stock.CompanyId);
             return View(stock);
         }
 

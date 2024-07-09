@@ -15,4 +15,20 @@
     {
         <p>You have @currentUser!.Balance.ToString("C")</p>
     }
+
+    @* show the last 10 StockEvents in cards *@
+
+    <h2>Recent Stock Events</h2>
+    <div class="row">
+        @foreach (StockEvent stockEvent in ((IEnumerable<StockEvent>)ViewData["StockEvents"])!)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@stockEvent.Description</h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

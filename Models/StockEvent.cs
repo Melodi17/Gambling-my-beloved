@@ -12,8 +12,8 @@ public class StockEvent
 
     public DateTime Date { get; set; }
 
-    public int? CompanyId { get; set; } = 0;
-    public Company? Company { get; set; } = null;
+    public int? CompanyId { get; set; }
+    public virtual Company Company { get; set; }
 
     public Industry? Industry { get; set; } = null;
 

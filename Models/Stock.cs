@@ -33,6 +33,8 @@ public class Stock
 
     public void UpdatePrice(decimal newPrice)
     {
+        if (newPrice < 0)
+            newPrice = Global.Random.Next(1, 10) * 0.01m;
         this.UnitPrice = newPrice;
         this.PriceHistory.Add(new()
         {

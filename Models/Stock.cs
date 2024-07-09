@@ -9,13 +9,14 @@ public class Stock
     public int Id { get; set; }
     public string Symbol { get; set; }
     
-    
     public int CompanyId { get; set; }
     public Company Company { get; set; }
     
     [Display(Name = "Unit Price")]
     [DataType(DataType.Currency)]
     public decimal UnitPrice { get; set; }
+    
+    public decimal Volatility { get; set; }
     
     [Display(Name = "Price Change")]
     public decimal PriceChange => this.GetPriceChange();

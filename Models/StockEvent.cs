@@ -88,23 +88,23 @@ public class StockEvent
     private static string DescriptionForIndustryEvent(Industry industry, StockEventType type, bool isPositive)
         => (type, isPositive) switch
         {
-            (StockEventType.Demand, true) => $"Demand for {industry} is on the rise",
-            (StockEventType.Demand, false) => $"{industry}'s demand is falling",
+            (StockEventType.Demand, true) => $"Demand for {industry.ToFriendlyString()} is on the rise",
+            (StockEventType.Demand, false) => $"{industry.ToFriendlyString()}'s demand is falling",
                 
-            (StockEventType.Supply, true) => $"The market is flooded with {industry} products",
-            (StockEventType.Supply, false) => $"Supply shortages are affecting {industry}",
+            (StockEventType.Supply, true) => $"The market is flooded with {industry.ToFriendlyString()} products",
+            (StockEventType.Supply, false) => $"Supply shortages are affecting {industry.ToFriendlyString()}",
                 
-            (StockEventType.WorldEvent, true) => $"A natural disaster has led to a global shortage of {industry} products",
-            (StockEventType.WorldEvent, false) => $"After a natural disaster, {industry} is a low priority",
+            (StockEventType.WorldEvent, true) => $"A natural disaster has led to a global shortage of {industry.ToFriendlyString()} products",
+            (StockEventType.WorldEvent, false) => $"After a natural disaster, {industry.ToFriendlyString()} is a low priority",
                 
-            (StockEventType.Regulation, true) => $"New regulations have been passed that favor {industry}",
-            (StockEventType.Regulation, false) => $"{industry} is facing increased regulation and scrutiny",
+            (StockEventType.Regulation, true) => $"New regulations have been passed that favor {industry.ToFriendlyString()}",
+            (StockEventType.Regulation, false) => $"{industry.ToFriendlyString()} is facing increased regulation and scrutiny",
                 
-            (StockEventType.InterestRate, true) => $"Interest rates have been lowered, benefiting {industry}",
-            (StockEventType.InterestRate, false) => $"Interest rates are rising, negatively impacting {industry}",
+            (StockEventType.InterestRate, true) => $"Interest rates have been lowered, benefiting {industry.ToFriendlyString()}",
+            (StockEventType.InterestRate, false) => $"Interest rates are rising, negatively impacting {industry.ToFriendlyString()}",
                 
-            (StockEventType.Inflation, true) => $"Inflation is driving up prices for {industry}",
-            (StockEventType.Inflation, false) => $"Inflation is increasing the costs of {industry} production",
+            (StockEventType.Inflation, true) => $"Inflation is driving up prices for {industry.ToFriendlyString()}",
+            (StockEventType.Inflation, false) => $"Inflation is increasing the costs of {industry.ToFriendlyString()} production",
             
             _ => "Unknown industry event"
         };
@@ -118,7 +118,7 @@ public class StockEvent
         stockEvent.Company = companies.AsEnumerable().OrderBy(x => Guid.NewGuid()).First();
         stockEvent.Type = CompanyEvents[random.Next(CompanyEvents.Length)];
         stockEvent.IsPositive = random.Next(0, 2) == 0;
-        stockEvent.Weight = (decimal)random.RandomGaussian(0, Global.Random.Next(10) == 0 ? 0.03 : 0.003);
+        stockEvent.Weight = GenerateWeight(random);
 
         stockEvent.Description = DescriptionForCompanyEvent(stockEvent.Company, stockEvent.Type, stockEvent.IsPositive);
 
@@ -134,11 +134,17 @@ public class StockEvent
         stockEvent.Industry = (Industry)random.Next(0, Enum.GetValues<Industry>().Length);
         stockEvent.Type = IndustryEvents[random.Next(IndustryEvents.Length)];
         stockEvent.IsPositive = random.Next(0, 2) == 0;
-        stockEvent.Weight = (decimal)random.NextDouble();
+        stockEvent.Weight = GenerateWeight(random);
 
         stockEvent.Description = DescriptionForIndustryEvent(stockEvent.Industry.Value, stockEvent.Type, stockEvent.IsPositive);
 
         return stockEvent;
+    }
+
+    private static decimal GenerateWeight(Random random)
+    {
+        bool skyfall = random.Next(30) == 0;
+        return (decimal)random.RandomGaussian(0, skyfall ? 0.03 : 0.003);
     }
 }
 

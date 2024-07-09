@@ -10,5 +10,29 @@ public enum Industry
     Services,
     BasicMaterials,
     IndustrialGoods,
-    Utilities
+    Utilities,
+    LuxuryGoods,
+    Automotives,
+}
+
+public static class IndustryExtensions
+{
+    public static string ToFriendlyString(this Industry industry)
+    {
+        return industry switch
+        {
+            Industry.Technology => "Technology",
+            Industry.Finance => "Finance",
+            Industry.Healthcare => "Healthcare",
+            Industry.Energy => "Energy",
+            Industry.ConsumerGoods => "Consumer Goods",
+            Industry.Services => "Services",
+            Industry.BasicMaterials => "Basic Materials",
+            Industry.IndustrialGoods => "Industrial Goods",
+            Industry.Utilities => "Utilities",
+            Industry.LuxuryGoods => "Luxury Goods",
+            Industry.Automotives => "Automotives",
+            _ => throw new ArgumentOutOfRangeException(nameof(industry), industry, null)
+        };
+    }
 }

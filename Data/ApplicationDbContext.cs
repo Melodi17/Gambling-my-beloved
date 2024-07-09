@@ -12,7 +12,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Company> Companies { get; set; }
     public DbSet<Stock> Stocks { get; set; }
-    public DbSet<Transaction> Transations { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
     public DbSet<StockOwnership> StockOwnerships { get; set; }
     public DbSet<StockEvent> StockEvents { get; set; }
 }

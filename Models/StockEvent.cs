@@ -5,7 +5,7 @@ namespace Gambling_my_beloved.Models;
 public class StockEvent
 {
     public int Id { get; set; }
-    public float Weight { get; set; }
+    public decimal Weight { get; set; }
     public string Description { get; set; }
     public bool IsPositive { get; set; }
     public StockEventType Type { get; set; }
@@ -118,7 +118,7 @@ public class StockEvent
         stockEvent.Company = companies.OrderBy(x => Guid.NewGuid()).First();
         stockEvent.Type = CompanyEvents[random.Next(CompanyEvents.Length)];
         stockEvent.IsPositive = random.Next(0, 2) == 0;
-        stockEvent.Weight = (float)random.NextDouble();
+        stockEvent.Weight = (decimal)random.NextDouble();
 
         stockEvent.Description = DescriptionForCompanyEvent(stockEvent.Company, stockEvent.Type, stockEvent.IsPositive);
 
@@ -134,7 +134,7 @@ public class StockEvent
         stockEvent.Industry = (Industry)random.Next(0, Enum.GetValues<Industry>().Length);
         stockEvent.Type = IndustryEvents[random.Next(IndustryEvents.Length)];
         stockEvent.IsPositive = random.Next(0, 2) == 0;
-        stockEvent.Weight = (float)random.NextDouble();
+        stockEvent.Weight = (decimal)random.NextDouble();
 
         stockEvent.Description = DescriptionForIndustryEvent(stockEvent.Industry.Value, stockEvent.Type, stockEvent.IsPositive);
 

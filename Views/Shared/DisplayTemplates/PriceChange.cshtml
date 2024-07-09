@@ -1,0 +1,14 @@
+﻿@model decimal
+
+@switch (Model)
+{
+    case > 0:
+        <span style="color:green">+@Model%</span>
+        break;
+    case < 0:
+        <span style="color:red">@Model%</span>
+        break;
+    default:
+        <span>@Model%</span>
+        break;
+}

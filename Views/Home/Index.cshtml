@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Home Page";
+    ApplicationUser currentUser = await UserManager.GetUserAsync(User);
+}
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>You have @currentUser!.Balance.ToString("C")</p>
+</div>

@@ -31,6 +31,9 @@ public class RandomEventService : IHostedService, IDisposable
     {
         decimal initialPrice = stock.UnitPrice;
         decimal priceChange = stock.UnitPrice * stockEvent.Weight * (stockEvent.IsPositive ? 1 : -1);
+        
+        // factor in the stock's volatility, which ranges between 0 and 10
+        priceChange *= stock.Volatility / 10;
                 
         stock.UpdatePrice(stock.UnitPrice + priceChange);
         
@@ -71,9 +74,10 @@ public class RandomEventService : IHostedService, IDisposable
         {
             // Apply the event to the company
             Company company = dbContext.Companies
+                .Where(c => c.Id == stockEvent.Company.Id)
                 .Include(c => c.Stocks)
                 .ThenInclude(s => s.PriceHistory)
-                .First(c => c.Id == stockEvent.Company.Id);
+                .First();
             
             foreach (Stock stock in company.Stocks)
                 UpdatePrice(stock, stockEvent);

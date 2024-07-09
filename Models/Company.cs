@@ -10,6 +10,8 @@ public class Company
     public string CEO { get; set; } = GenerateCEOName();
     public string LogoUrl { get; set; }
     
+    public decimal Controversy { get; set; }
+    
     public virtual List<Stock> Stocks { get; set; }
     public List<Industry> Industries { get; set; }
 

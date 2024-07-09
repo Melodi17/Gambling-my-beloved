@@ -44,9 +44,10 @@ namespace Gambling_my_beloved.Controllers
                 return NotFound();
 
             Stock stock = await _context.Stocks
+                .Where(s => s.Id == id)
                 .Include(s => s.Company)
                 .Include(s => s.PriceHistory)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync();
 
             if (stock == null)
                 return NotFound();
@@ -69,7 +70,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Symbol,CompanyId,UnitPrice")] Stock stock)
+        public async Task<IActionResult> Create([Bind("Id,Symbol,CompanyId,UnitPrice,Volatility")] Stock stock)
         {
             if (ModelState.IsValid)
             {
@@ -105,7 +106,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Symbol,CompanyId,UnitPrice")] Stock stock)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Symbol,CompanyId,UnitPrice,Volatility")] Stock stock)
         {
             if (id != stock.Id)
             {

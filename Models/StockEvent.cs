@@ -118,7 +118,7 @@ public class StockEvent
         stockEvent.Company = companies.AsEnumerable().OrderBy(x => Guid.NewGuid()).First();
         stockEvent.Type = CompanyEvents[random.Next(CompanyEvents.Length)];
         stockEvent.IsPositive = random.Next(0, 2) == 0;
-        stockEvent.Weight = GenerateWeight(random);
+        stockEvent.Weight = GenerateWeight(random, stockEvent.Company);
 
         stockEvent.Description = DescriptionForCompanyEvent(stockEvent.Company, stockEvent.Type, stockEvent.IsPositive);
 
@@ -141,9 +141,11 @@ public class StockEvent
         return stockEvent;
     }
 
-    private static decimal GenerateWeight(Random random)
+    private static decimal GenerateWeight(Random random, Company company = null)
     {
-        bool skyfall = random.Next(30) == 0;
+        int contraversiality = (int)random.RandomGaussian((double)(100 - (company?.Controversy * 10) ?? 30), 5);
+        contraversiality = Math.Clamp(contraversiality, 3, 100);
+        bool skyfall = random.Next(contraversiality) == 0;
         return (decimal)random.RandomGaussian(0, skyfall ? 0.03 : 0.003);
     }
 }

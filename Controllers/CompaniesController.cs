@@ -44,8 +44,11 @@ namespace Gambling_my_beloved.Controllers
             }
 
             Company company = await _context.Companies
+                .Where(c => c.Id == id)
                 .Include(c => c.Stocks)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .ThenInclude(s => s.PriceHistory)
+                .FirstOrDefaultAsync();
+            
             if (company == null)
             {
                 return NotFound();

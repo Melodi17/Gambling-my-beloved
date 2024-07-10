@@ -32,7 +32,7 @@ namespace Gambling_my_beloved.Controllers
 
             ViewData["SearchQuery"] = searchQuery ?? string.Empty;
 
-            return View(await companies.ToListAsync());
+            return View(await companies.Take(50).ToListAsync());
         }
 
         // GET: Companies/Details/5

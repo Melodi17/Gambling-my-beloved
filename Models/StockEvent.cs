@@ -12,6 +12,8 @@ public class StockEvent
 
     public DateTime Date { get; set; }
 
+    public List<int> EffectedStocks { get; set; }
+    
     public int? CompanyId { get; set; }
     public virtual Company Company { get; set; }
 
@@ -115,7 +117,8 @@ public class StockEvent
         StockEvent stockEvent = new();
 
         stockEvent.Date = DateTime.Now;
-        stockEvent.Company = companies.RandomRecord(random);
+        stockEvent.Company = companies.Include(e => e.Stocks).RandomRecord(random);
+        stockEvent.EffectedStocks = stockEvent.Company.Stocks.Select(s => s.Id).ToList();
         stockEvent.Type = CompanyEvents.RandomElement(random);
         stockEvent.IsPositive = random.Next(0, 2) == 0;
         stockEvent.Weight = GenerateWeight(random, stockEvent.Company);
@@ -125,13 +128,18 @@ public class StockEvent
         return stockEvent;
     }
     
-    public static StockEvent GenerateRandomEventForIndustry()
+    public static StockEvent GenerateRandomEventForIndustry(DbSet<Company> companies)
     {
         Random random = Global.Random;
         StockEvent stockEvent = new();
 
         stockEvent.Date = DateTime.Now;
         stockEvent.Industry = (Industry)random.Next(0, Enum.GetValues<Industry>().Length);
+        stockEvent.EffectedStocks = companies
+            .Where(c => c.Industries.Contains(stockEvent.Industry.Value))
+            .SelectMany(c => c.Stocks)
+            .Select(s => s.Id)
+            .ToList();
         stockEvent.Type = IndustryEvents[random.Next(IndustryEvents.Length)];
         stockEvent.IsPositive = random.Next(0, 2) == 0;
         stockEvent.Weight = GenerateWeight(random);

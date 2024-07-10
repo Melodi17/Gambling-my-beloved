@@ -37,7 +37,7 @@ namespace Gambling_my_beloved.Controllers
             
             ViewData["SearchQuery"] = searchQuery ?? string.Empty;
 
-            return View(await stocks.ToListAsync());
+            return View(await stocks.Take(50).ToListAsync());
         }
 
         // GET: Stocks/Details/5
@@ -47,19 +47,19 @@ namespace Gambling_my_beloved.Controllers
                 return NotFound();
 
             Stock stock = await _context.Stocks
-                .Where(s => s.Id == id)
                 .Include(s => s.Company)
                 .Include(s => s.PriceHistory)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (stock == null)
                 return NotFound();
             
+            string userId = _userManager.GetUserId(User);
+            
             StockOwnership stockOwnership = _context.StockOwnerships
-                .Where(s => s.StockId == stock.Id)
                 .Include(s => s.Transactions)
                 .Include(s=> s.Stock)
-                .FirstOrDefault();
+                .FirstOrDefault(s => s.StockId == stock.Id && s.AccountId == userId);
             
             ViewData["StockOwnership"] = stockOwnership;
             

@@ -21,7 +21,7 @@
     <h2>Recent Stock Events</h2>
     <div class="row">
         @foreach (var item in ((IEnumerable<StockEvent>)ViewData["StockEvents"])!
-            .Zip((IEnumerable<Company[]>)ViewData["Companies"]!, (stockEvent, company) => new { StockEvent = stockEvent, Companies = company }))
+            .Zip((IEnumerable<Stock[]>)ViewData["EffectedStocks"]!, (stockEvent, stocks) => new { StockEvent = stockEvent, Stocks = stocks }))
         {
             <div class="col-md-4">
                 <div class="card">
@@ -29,7 +29,7 @@
                         <h5 class="card-title">@item.StockEvent.Description</h5>
                         <p class="card-text">@item.StockEvent.Date</p>
                         
-                        @foreach (Stock stock in item.Companies.SelectMany(company => company.Stocks))
+                        @foreach (Stock stock in item.Stocks)
                         {
                             <p class="card-text">
                                 <a asp-controller="Stocks" asp-action="Details" asp-route-id="@stock.Id">@stock.Symbol</a>: @Html.DisplayFor(modelItem => stock.UnitPrice) (@Html.DisplayFor(modelItem => stock.PriceChange, "PriceChange"))

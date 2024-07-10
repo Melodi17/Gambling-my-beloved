@@ -22,4 +22,10 @@ public static class Extensions
         int count = dbSet.Count();
         return dbSet.Skip(random.Next(count)).First();
     }
+    
+    public static T RandomRecord<T>(this IQueryable<T> query, Random random)
+    {
+        int count = query.Count();
+        return query.Skip(random.Next(count)).First();
+    }
 }

@@ -43,9 +43,9 @@ public class RandomEventService : IHostedService, IDisposable
 
     private TimeSpan GetRandomTimeSpan()
     {
-        // return TimeSpan.FromSeconds(1);
+        return TimeSpan.FromSeconds(1);
         // return TimeSpan.FromSeconds(Global.Random.Next(10, 30));
-        return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
+        // return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
     }
 
     private void DoWork(object? state)
@@ -56,33 +56,39 @@ public class RandomEventService : IHostedService, IDisposable
         this._timer!.Change(this.GetRandomTimeSpan(), TimeSpan.Zero);
 
         StockEvent stockEvent = Global.Random.Next(0, 5) == 0 
-            ? StockEvent.GenerateRandomEventForIndustry() 
+            ? StockEvent.GenerateRandomEventForIndustry(dbContext.Companies)
             : StockEvent.GenerateRandomEventForCompany(dbContext.Companies);
 
-        if (stockEvent.Industry != null)
-        {
-            // Get all companies in the industry
-            IQueryable<Company> companies = dbContext.Companies
-                .Where(c => c.Industries.Contains(stockEvent.Industry.Value));
-            
-            // Apply the event to all companies in the industry
-            foreach (Company company in companies.Include(company => company.Stocks)
-                         .ThenInclude(stock => stock.PriceHistory))
-            foreach (Stock stock in company.Stocks)
-                UpdatePrice(stock, stockEvent);
-        }
-        else if (stockEvent.Company != null)
-        {
-            // Apply the event to the company
-            Company company = dbContext.Companies
-                .Where(c => c.Id == stockEvent.Company.Id)
-                .Include(c => c.Stocks)
-                .ThenInclude(s => s.PriceHistory)
-                .First();
-            
-            foreach (Stock stock in company.Stocks)
-                UpdatePrice(stock, stockEvent);
-        }
+        // if (stockEvent.Industry != null)
+        // {
+        //     // Get all companies in the industry
+        //     IQueryable<Company> companies = dbContext.Companies
+        //         .Where(c => c.Industries.Contains(stockEvent.Industry.Value));
+        //     
+        //     // Apply the event to all companies in the industry
+        //     foreach (Company company in companies.Include(company => company.Stocks)
+        //                  .ThenInclude(stock => stock.PriceHistory))
+        //     foreach (Stock stock in company.Stocks)
+        //         UpdatePrice(stock, stockEvent);
+        // }
+        // else if (stockEvent.Company != null)
+        // {
+        //     // Apply the event to the company
+        //     Company company = dbContext.Companies
+        //         .Where(c => c.Id == stockEvent.Company.Id)
+        //         .Include(c => c.Stocks)
+        //         .ThenInclude(s => s.PriceHistory)
+        //         .First();
+        //     
+        //     foreach (Stock stock in company.Stocks)
+        //         UpdatePrice(stock, stockEvent);
+        // }
+        
+        IQueryable<Stock> stocks = dbContext.Stocks
+            .Include(stock => stock.PriceHistory);
+
+        foreach (Stock stock in stockEvent.EffectedStocks.Select(id => stocks.First(stock => stock.Id == id)))
+            UpdatePrice(stock, stockEvent);
         
         dbContext.StockEvents.Add(stockEvent);
 

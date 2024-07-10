@@ -3,12 +3,12 @@
 @switch (Model)
 {
     case > 0:
-        <span style="color:green">+@Model%</span>
+        <span style="color:green">+@Model.ToString("0.00")%</span>
         break;
     case < 0:
-        <span style="color:red">@Model%</span>
+        <span style="color:red">@Model.ToString("0.00")%</span>
         break;
     default:
-        <span>@Model%</span>
+        <span>@Model.ToString("0.00")%</span>
         break;
 }

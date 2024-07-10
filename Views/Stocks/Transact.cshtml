@@ -1,0 +1,22 @@
+﻿@model Transaction
+
+@{
+    bool success = (bool)ViewData["Success"];
+    string message = (string)ViewData["Message"];
+
+    StockOwnership stockOwnership = Model.StockOwnership;
+    Stock stock = stockOwnership.Stock;
+}
+
+
+<div class="alert @(success ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+    <h4 class="alert-heading">
+        @(success ? "Successfully" : "Failed to") @(Model.Type == TransactionType.Buy ? "buy" : "sell")
+        @Model.Quantity.ToString("N0") shares of @stock.Symbol
+    </h4>
+    <p>@message</p>
+</div>
+
+<hr/>
+
+<a asp-controller="Stocks" asp-action="Details" asp-route-id="@stock.Id" class="btn btn-primary">Back to Stock</a>

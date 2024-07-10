@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gambling_my_beloved.Data;
 using Gambling_my_beloved.Models;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 
 namespace Gambling_my_beloved.Controllers
@@ -14,10 +15,12 @@ namespace Gambling_my_beloved.Controllers
     public class StocksController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public StocksController(ApplicationDbContext context)
+        public StocksController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Stocks
@@ -51,6 +54,14 @@ namespace Gambling_my_beloved.Controllers
 
             if (stock == null)
                 return NotFound();
+            
+            StockOwnership stockOwnership = _context.StockOwnerships
+                .Where(s => s.StockId == stock.Id)
+                .Include(s => s.Transactions)
+                .Include(s=> s.Stock)
+                .FirstOrDefault();
+            
+            ViewData["StockOwnership"] = stockOwnership;
             
             ViewData["StockHistory"] = JsonConvert.SerializeObject(stock.PriceHistory
                 .Select(p => new { Date = p.Date, Price = p.Price }));
@@ -171,6 +182,87 @@ namespace Gambling_my_beloved.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Transact(int stockId, TransactionType type, int quantity)
+        {
+            Stock stock = await _context.Stocks
+                .Where(s => s.Id == stockId)
+                .Include(s => s.PriceHistory)
+                .FirstOrDefaultAsync();
+
+            if (stock == null)
+                return NotFound();
+            
+            string userId = _userManager.GetUserId(User);
+
+            StockOwnership stockOwnership = this._context.StockOwnerships
+                .Include(stockOwnership => stockOwnership.Account)
+                .Include(stockOwnership => stockOwnership.Transactions)
+                .FirstOrDefault(s => s.StockId == stock.Id && s.AccountId == userId);
+            
+            if (stockOwnership == null)
+            {
+                stockOwnership = new StockOwnership
+                {
+                    StockId = stock.Id,
+                    AccountId = userId,
+                    Transactions = new()
+                };
+                _context.StockOwnerships.Add(stockOwnership);
+                
+                await _context.SaveChangesAsync();
+                
+                stockOwnership = this._context.StockOwnerships
+                    .Include(s => s.Account)
+                    .Include(s => s.Transactions)
+                    .FirstOrDefault(s => s.StockId == stock.Id && s.AccountId == userId);
+            }
+            
+            decimal totalCost = quantity * stock.UnitPrice;
+            
+            Transaction transaction = new()
+            {
+                StockOwnershipId = stockOwnership.Id,
+                StockOwnership = stockOwnership,
+                Type = type,
+                Quantity = quantity,
+                Amount = totalCost,
+                Date = DateTime.Now
+            };
+            
+            if (type == TransactionType.Buy)
+            {
+                if (totalCost > stockOwnership.Account.Balance)
+                {
+                    ViewData["Success"] = false;
+                    ViewData["Message"] = "Insufficient funds";
+                    return this.View(transaction);
+                }
+                
+                stockOwnership.Account.Balance -= totalCost;
+            }
+            else
+            {
+                if (quantity > stockOwnership.GetQuantity())
+                {
+                    ViewData["Success"] = false;
+                    ViewData["Message"] = "Insufficient stocks";
+                    return this.View(transaction);
+                }
+                
+                stockOwnership.Account.Balance += totalCost;
+            }
+            
+            _context.Transactions.Add(transaction);
+            
+            await _context.SaveChangesAsync();
+            
+            ViewData["Success"] = true;
+            ViewData["Message"] = "Transaction successful";
+            return View(transaction);
         }
 
         private bool StockExists(int id)

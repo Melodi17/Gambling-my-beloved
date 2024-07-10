@@ -13,6 +13,7 @@ public enum Industry
     Utilities,
     LuxuryGoods,
     Automotives,
+    Entertainment
 }
 
 public static class IndustryExtensions
@@ -32,6 +33,7 @@ public static class IndustryExtensions
             Industry.Utilities => "Utilities",
             Industry.LuxuryGoods => "Luxury Goods",
             Industry.Automotives => "Automotives",
+            Industry.Entertainment => "Entertainment",
             _ => throw new ArgumentOutOfRangeException(nameof(industry), industry, null)
         };
     }

@@ -42,6 +42,11 @@ public class StockEvent
         StockEventType.InterestRate,
         StockEventType.Inflation
     };
+    
+    private static readonly StockEventType[] SpecialEvents =
+    {
+        StockEventType.CCOPartnership
+    };
 
     private static string Effect(string passthrough, Action action)
     {
@@ -117,8 +122,12 @@ public class StockEvent
         StockEvent stockEvent = new();
 
         stockEvent.Date = DateTime.Now;
-        stockEvent.Company = companies.Include(e => e.Stocks).RandomRecord(random);
-        stockEvent.EffectedStocks = stockEvent.Company.Stocks.Select(s => s.Id).ToList();
+        stockEvent.Company = companies.Include(e => e.Stocks)
+            .Where(c => !c.Stocks.All(s => s.Frozen))
+            .RandomRecord(random);
+        stockEvent.EffectedStocks = stockEvent.Company.Stocks
+            .Where(s => !s.Frozen)
+            .Select(s => s.Id).ToList();
         stockEvent.Type = CompanyEvents.RandomElement(random);
         stockEvent.IsPositive = random.Next(0, 2) == 0;
         stockEvent.Weight = GenerateWeight(random, stockEvent.Company);
@@ -138,6 +147,7 @@ public class StockEvent
         stockEvent.EffectedStocks = companies
             .Where(c => c.Industries.Contains(stockEvent.Industry.Value))
             .SelectMany(c => c.Stocks)
+            .Where(s => !s.Frozen)
             .Select(s => s.Id)
             .ToList();
         stockEvent.Type = IndustryEvents[random.Next(IndustryEvents.Length)];
@@ -145,6 +155,32 @@ public class StockEvent
         stockEvent.Weight = GenerateWeight(random);
 
         stockEvent.Description = DescriptionForIndustryEvent(stockEvent.Industry.Value, stockEvent.Type, stockEvent.IsPositive);
+
+        return stockEvent;
+    }
+    
+    public static StockEvent GenerateRandomSpecialEvent(DbSet<Company> companies)
+    {
+        Random random = Global.Random;
+        StockEvent stockEvent = new();
+
+        stockEvent.Date = DateTime.Now;
+        stockEvent.Type = SpecialEvents.RandomElement(random);
+        stockEvent.IsPositive = random.Next(0, 2) == 0;
+        stockEvent.Weight = GenerateWeight(random);
+
+        stockEvent.Description = stockEvent.Type switch
+        {
+            StockEventType.CCOPartnership => Effect("A new partnership has been formed between two companies",
+                () =>
+                {
+                    Company company1 = companies.RandomRecord(random);
+                    Company company2 = companies.Where(c => c != company1).RandomRecord(random);
+                    company1.Controversy += 1;
+                    company2.Controversy += 1;
+                }),
+            _ => "Unknown special event"
+        };
 
         return stockEvent;
     }
@@ -179,4 +215,7 @@ public enum StockEventType
     Regulation,
     InterestRate,
     Inflation,
+    
+    // Special events
+    CCOPartnership,
 }

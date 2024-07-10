@@ -6,6 +6,6 @@ public class ApplicationUser : IdentityUser
 {
     public const decimal InitialBalance = 1000;
     
-    public decimal Balance { get; set; }
+    public decimal Balance { get; set; } = InitialBalance;
     public List<StockOwnership> Stocks { get; set; }
 }

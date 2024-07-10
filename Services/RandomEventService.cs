@@ -43,8 +43,8 @@ public class RandomEventService : IHostedService, IDisposable
 
     private TimeSpan GetRandomTimeSpan()
     {
-        return TimeSpan.FromSeconds(1);
-        // return TimeSpan.FromSeconds(Global.Random.Next(10, 30));
+        // return TimeSpan.FromSeconds(1);
+        return TimeSpan.FromSeconds(Global.Random.Next(10, 30));
         // return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
     }
 

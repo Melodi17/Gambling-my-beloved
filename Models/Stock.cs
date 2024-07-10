@@ -20,6 +20,9 @@ public class Stock
     
     [Display(Name = "Price Change")]
     public decimal PriceChange => this.GetPriceChange();
+
+    public bool Frozen { get; set; } = false;
+    
     public virtual List<PricePeriod> PriceHistory { get; set; }
     
     public Stock(string symbol, Company company, decimal unitPrice)

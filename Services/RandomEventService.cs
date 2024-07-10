@@ -36,16 +36,16 @@ public class RandomEventService : IHostedService, IDisposable
         priceChange *= stock.Volatility / 10;
                 
         stock.UpdatePrice(stock.UnitPrice + priceChange);
-        
+            
         this._logger.Log(LogLevel.Information, 
             $"Stock {stock.Symbol} price changed from {initialPrice} to {stock.UnitPrice} due to event \"{stockEvent.Description}\"");
     }
 
     private TimeSpan GetRandomTimeSpan()
     {
-        return TimeSpan.FromSeconds(1);
+        // return TimeSpan.FromSeconds(1);
         // return TimeSpan.FromSeconds(Global.Random.Next(10, 30));
-        // return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
+        return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
     }
 
     private void DoWork(object? state)
@@ -66,7 +66,8 @@ public class RandomEventService : IHostedService, IDisposable
                 .Where(c => c.Industries.Contains(stockEvent.Industry.Value));
             
             // Apply the event to all companies in the industry
-            foreach (Company company in companies.Include(company => company.Stocks).ThenInclude(stock => stock.PriceHistory))
+            foreach (Company company in companies.Include(company => company.Stocks)
+                         .ThenInclude(stock => stock.PriceHistory))
             foreach (Stock stock in company.Stocks)
                 UpdatePrice(stock, stockEvent);
         }

@@ -26,7 +26,7 @@ public class HomeController : Controller
 
         IQueryable<StockEvent> events = this._context.StockEvents
             .OrderByDescending(e => e.Date)
-            .Take(30)
+            .Take(5)
             .Include(e => e.Company)
             .ThenInclude(e => e.Stocks)
             .ThenInclude(s => s.PriceHistory);
@@ -37,32 +37,8 @@ public class HomeController : Controller
             .Include(s => s.PriceHistory);
 
         ViewData["StockEvents"] = eventsList;
-        ViewData["EffectedStocks"] = eventsList.Select(x => x.EffectedStocks.Select(id => stocks.First(stock => stock.Id == id)).ToArray()).ToList();
-        // Each item in companies should be an array of either the targeted company or all companies that are part of the events industry
-        // ViewData["Companies"] = events.AsEnumerable().Select(e => e.Company != null
-        //     ? new Company[] { e.Company }
-        //     : this._context.Companies
-        //         .Where(c => c.Industries.Contains(e.Industry.Value))
-        //         .Include(c => c.Stocks)
-        //         .ThenInclude(s => s.PriceHistory)
-        //         .AsEnumerable()
-        //         .OrderBy(c => c.Stocks.Sum(s => s.UnitPrice))
-        //         .Take(3)
-        //         .ToArray()).ToList();
-
-//         List<Stock[]> effectedStocks = eventsList.SelectMany(e => e.Company != null
-//             ? e.Company.Stocks
-//             : this._context.Companies
-//                 .Where(c => c.Industries.Contains(e.Industry.Value))
-//                 .Include(c => c.Stocks)
-//                 .ThenInclude(s => s.PriceHistory)
-//                 .AsEnumerable()
-//                 .OrderBy(c => c.Stocks.Sum(s => s.UnitPrice))
-//                 .Take(3)
-//                 .SelectMany(c => c.Stocks)).ToList();
-//
-// // Now, map the optimizedCompaniesQuery result to your desired structure
-//         ViewData["Companies"] = optimizedCompaniesQuery.Select(x => x.Companies).ToList();
+        ViewData["EffectedStocks"] = eventsList.Select(x => x.EffectedStocks
+            .Select(id => stocks.First(stock => stock.Id == id)).ToArray()).ToList();
 
         return View();
     }

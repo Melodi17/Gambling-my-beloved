@@ -27,7 +27,7 @@ public class RandomEventService : IHostedService, IDisposable
         return Task.CompletedTask;
     }
     
-    private void UpdatePrice(Stock stock, StockEvent stockEvent)
+    private void UpdatePrice(Stock stock, StockEvent stockEvent, DateTime time)
     {
         decimal initialPrice = stock.UnitPrice;
         decimal priceChange = stock.UnitPrice * stockEvent.Weight * (stockEvent.IsPositive ? 1 : -1);
@@ -35,7 +35,7 @@ public class RandomEventService : IHostedService, IDisposable
         // factor in the stock's volatility, which ranges between 0 and 10
         priceChange *= stock.Volatility / 10;
                 
-        stock.UpdatePrice(stock.UnitPrice + priceChange);
+        stock.UpdatePrice(stock.UnitPrice + priceChange, time);
             
         this._logger.Log(LogLevel.Information, 
             $"Stock {stock.Symbol} price changed from {initialPrice} to {stock.UnitPrice} due to event \"{stockEvent.Description}\"");
@@ -88,7 +88,7 @@ public class RandomEventService : IHostedService, IDisposable
             .Include(stock => stock.PriceHistory);
 
         foreach (Stock stock in stockEvent.EffectedStocks.Select(id => stocks.First(stock => stock.Id == id)))
-            UpdatePrice(stock, stockEvent);
+            UpdatePrice(stock, stockEvent, stockEvent.Date);
         
         dbContext.StockEvents.Add(stockEvent);
 

@@ -36,7 +36,7 @@ public class Stock
     {
     }
 
-    public void UpdatePrice(decimal newPrice)
+    public void UpdatePrice(decimal newPrice, DateTime time)
     {
         if (newPrice < 0)
             newPrice = Global.Random.Next(1, 10) * 0.01m;
@@ -44,12 +44,12 @@ public class Stock
         this.PriceHistory.Add(new()
         {
             StockId = this.Id,
-            Date = DateTime.Now,
+            Date = time,
             Price = newPrice
         });
     }
     
-    public decimal GetPriceChange()
+    public decimal GetPriceChange(DateTime? date = null)
     {
         if (this.PriceHistory == null)
             return 0;
@@ -57,10 +57,21 @@ public class Stock
         if (this.PriceHistory.Count < 2)
             return 0;
         
-        decimal lastPrice = this.PriceHistory[^2].Price;
-        decimal currentPrice = this.PriceHistory[^1].Price;
+        IEnumerable<PricePeriod> priceHistory = this.PriceHistory.OrderByDescending(p => p.Date);
+        
+        if (date != null)
+            priceHistory = priceHistory.Where(p => p.Date <= date.Value);
+        
+        decimal lastPrice = priceHistory.Skip(1).First().Price;
+        decimal currentPrice = priceHistory.First().Price;
         
         return Math.Round((currentPrice - lastPrice) / lastPrice * 100, 2);
+    }
+
+    public decimal GetHistoricalPrice(DateTime date)
+    {
+        return this.PriceHistory
+            .First(p => p.Date == date).Price;
     }
 }
 

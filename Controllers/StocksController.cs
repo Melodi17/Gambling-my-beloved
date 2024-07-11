@@ -81,7 +81,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Symbol,CompanyId,UnitPrice,Volatility")] Stock stock)
+        public async Task<IActionResult> Create([Bind("Id,Symbol,CompanyId,UnitPrice,Volatility,Color")] Stock stock)
         {
             if (ModelState.IsValid)
             {
@@ -117,7 +117,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Symbol,CompanyId,UnitPrice,Volatility")] Stock stock)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Symbol,CompanyId,UnitPrice,Volatility,Color")] Stock stock)
         {
             if (id != stock.Id)
             {

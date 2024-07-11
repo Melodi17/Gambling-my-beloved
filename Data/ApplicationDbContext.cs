@@ -23,7 +23,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Entity<Company>()
             .Property(e => e.Industries)
             .HasConversion(
-                v => string.Join(",", v.Select(e => e.GetFriendly()).ToArray()),
+                v => string.Join(",", v.Select(e => e.ToString()).ToArray()),
                 v => v.Split(new[] { ',' })
                     .Select(e => Enum.Parse(typeof(Industry), e, true))
                     .Cast<Industry>()

@@ -37,11 +37,11 @@
         <tr>
             <td class="align-content-center">
                 <a asp-action="Details" asp-route-id="@item.Id">
-                    <img src="@item.LogoUrl" alt="Company logo" class="img-thumbnail" style="height: 5vh;"/>
+                    <img src="@item.LogoUrl" alt="Company logo" class="img-thumbnail" style="height: 75px;"/>
                 </a>
             </td>
             <td>
-                <a asp-action="Details" asp-route-id="@item.Id">
+                <a asp-action="Details" asp-route-id="@item.Id" class="text-dark no-dec">
                     @Html.DisplayFor(modelItem => item.Name)
                 </a>
             </td>

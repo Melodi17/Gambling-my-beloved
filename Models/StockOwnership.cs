@@ -71,4 +71,7 @@ public class StockOwnership
     }
     
     public decimal GetCurrentStockValue() => this.GetQuantity() * this.Stock.UnitPrice;
+    
+    public decimal GetTotalYield() => this.GetCurrentStockValue() - this.GetTotalInvestment();
+    public decimal GetTotalYieldPercentage() => Math.Round(this.GetTotalYield() / this.GetTotalInvestment() * 100, 2);
 }

@@ -35,12 +35,12 @@
     {
         <tr>
             <td>
-                <a asp-action="Details" asp-route-id="@item.Id">
-                    @Html.DisplayFor(modelItem => item.Symbol)
+                <a asp-action="Details" asp-route-id="@item.Id" class="stock-nameplate" style="background-color: @item.Color">
+                    @item.Symbol
                 </a>
             </td>
             <td>
-                <a asp-controller="Companies" asp-action="Details" asp-route-id="@item.Company.Id">
+                <a asp-controller="Companies" asp-action="Details" asp-route-id="@item.Company.Id" class="text-dark no-dec">
                     @Html.DisplayFor(modelItem => item.Company.Name)
                 </a>
             </td>

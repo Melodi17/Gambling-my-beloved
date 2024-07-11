@@ -135,7 +135,7 @@ namespace Gambling_my_beloved.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            ViewData["Industries"] = Enum.GetValues<Industry>().Select(i => new SelectListItem(i.GetFriendly(), i.ToString()));
+            ViewData["Industries"] = Enum.GetValues<Industry>().Select(i => new SelectListItem(i.ToString(), i.ToString()));
             return View(company);
         }
 

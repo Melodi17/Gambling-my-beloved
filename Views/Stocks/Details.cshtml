@@ -22,9 +22,7 @@
                     @Html.DisplayNameFor(model => model.Symbol)
                 </dt>
                 <dd class="col-5">
-                    <strong>
-                        @Html.DisplayFor(model => model.Symbol)
-                    </strong>
+                    <div class="stock-nameplate" style="background-color: @Model.Color">@Model.Symbol</div>
                 </dd>
                 <dt class="col-5">
                     @Html.DisplayNameFor(model => model.Company)
@@ -161,6 +159,8 @@
                         theme: "light2",
                         data: [{
                             markerSize: 0,
+                            lineColor: "@Model.Color",
+                            markerColor: "@Model.Color",
                             type: "line",
                             dataPoints: DataItem
                         }]

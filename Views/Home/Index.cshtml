@@ -5,45 +5,63 @@
 
 @{
     ViewData["Title"] = "Home Page";
-    ApplicationUser? currentUser = await UserManager.GetUserAsync(User);
+    ApplicationUser? currentUser = ViewData["User"] as ApplicationUser;
 }
 
+<h1 class="display-4">Welcome</h1>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <p>You have @currentUser!.Balance.ToString("C")</p>
-    }
-
-    @* show the last 10 StockEvents in cards *@
-
-    <h2>Recent Stock Events</h2>
-    <div class="row">
-        @foreach (var item in ((IEnumerable<StockEvent>)ViewData["StockEvents"])!
-            .Zip((IEnumerable<Stock[]>)ViewData["EffectedStocks"]!,
-                (stockEvent, stocks) => new { StockEvent = stockEvent, Stocks = stocks }))
+<div class="row">
+    <div class="col-8">
+        @if (currentUser != null)
         {
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.StockEvent.Description</h5>
-                        <p class="card-text">@item.StockEvent.Date</p>
-                        
-                        @foreach (Stock stock in item.Stocks)
-                        {
-                            decimal price = stock.GetHistoricalPrice(item.StockEvent.Date);
-                            decimal priceChange = stock.GetPriceChange(item.StockEvent.Date);
-                            <p class="card-text">
-                                <a asp-controller="Stocks" asp-action="Details" asp-route-id="@stock.Id">
-                                    @stock.Symbol
-                                </a>: @Html.DisplayFor(modelItem => price)
-                                (@Html.DisplayFor(modelItem => priceChange, "PriceChange"))
-                            </p>
-                        }
+            <h2 class="display-5">Statistics</h2>
+            
+            
+        }
+    </div>
+
+    <div class="col">
+        <h2 class="display-5">Recent news</h2>
+
+        <div class="row">
+            @foreach (var item in ((IEnumerable<StockEvent>)ViewData["StockEvents"])!
+                .Zip((IEnumerable<Stock[]>)ViewData["EffectedStocks"]!,
+                    (stockEvent, stocks) => new { StockEvent = stockEvent, Stocks = stocks }))
+            {
+                <div class="col-12">
+                    <div class="card m-2 ms-0">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.StockEvent.Description</h5>
+
+                            @foreach (Stock stock in item.Stocks)
+                            {
+                                decimal price = stock.GetHistoricalPrice(item.StockEvent.Date);
+                                decimal priceChange = stock.GetPriceChangePercent(item.StockEvent.Date);
+                                <div class="card mt-2">
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <a asp-controller="Stocks" asp-action="Details" asp-route-id="@stock.Id" class="stock-nameplate" style="background-color: @stock.Color">
+                                                @stock.Symbol
+                                            </a>
+                                        </div>
+
+                                        <div class="col centerfix-col">
+                                            @price.ToString("C")
+                                        </div>
+
+                                        <div class="col-auto me-2 centerfix-col">
+                                            @Html.DisplayFor(modelItem => priceChange, "PriceChange")
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <hr/>
+                            <p class="card-text text-secondary">@item.StockEvent.Date</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>

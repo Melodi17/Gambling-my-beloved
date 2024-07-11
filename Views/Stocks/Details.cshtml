@@ -1,10 +1,12 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Html
 @model Gambling_my_beloved.Models.Stock
+
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "Details";
-    StockOwnership? stockOwnership = ViewData["StockOwnership"] as StockOwnership;
-    int quantity = stockOwnership?.GetQuantity() ?? 0;
-    decimal totalInvestment = stockOwnership?.GetTotalInvestment() ?? 0;
+    bool isSignedIn = SignInManager.IsSignedIn(User);
 }
 
 <h1>@Model.Symbol - @Model.Company.Name</h1>
@@ -14,117 +16,125 @@
     <h4>Information</h4>
     <hr/>
     <div class="row">
-        <div class="col-3">
+        <div class="col-lg-4 col-12">
             <dl class="row">
-                <dt class="col-sm-5">
+                <dt class="col-5">
                     @Html.DisplayNameFor(model => model.Symbol)
                 </dt>
-                <dd class="col-sm-5">
+                <dd class="col-5">
                     <strong>
                         @Html.DisplayFor(model => model.Symbol)
                     </strong>
                 </dd>
-                <dt class="col-sm-5">
+                <dt class="col-5">
                     @Html.DisplayNameFor(model => model.Company)
                 </dt>
-                <dd class="col-sm-5">
+                <dd class="col-5">
                     <a asp-controller="Companies" asp-action="Details" asp-route-id="@Model.Company.Id">
                         @Html.DisplayFor(model => model.Company.Name)
                     </a>
                 </dd>
-                <dt class="col-sm-5">
+                <dt class="col-5">
                     @Html.DisplayNameFor(model => model.UnitPrice)
                 </dt>
-                <dd class="col-sm-5">
+                <dd class="col-5">
                     @Html.DisplayFor(model => model.UnitPrice)
                 </dd>
-                <dt class="col-sm-5">
+                <dt class="col-5">
                     @Html.DisplayNameFor(model => model.PriceChange)
                 </dt>
-                <dd class="col-sm-5">
+                <dd class="col-5">
                     @Html.DisplayFor(model => model.PriceChange, "PriceChange")
                 </dd>
             </dl>
         </div>
-
-        <div class="col-3">
+        
+        <div class="col-lg-4 col-12">
             <dl class="row">
-                <dt class="col-sm-5">
+                <dt class="col-5">
                     @Html.DisplayNameFor(model => model.Volatility)
                 </dt>
-                <dd class="col-sm-5">
+                <dd class="col-5">
                     @Html.DisplayFor(model => model.Volatility)
                 </dd>
-                <dt class="col-sm-5">
+                <dt class="col-5">
                     @Html.DisplayNameFor(model => model.Company.Controversy)
                 </dt>
-                <dd class="col-sm-5">
+                <dd class="col-5">
                     @Html.DisplayFor(model => model.Company.Controversy)
                 </dd>
             </dl>
         </div>
 
-        <div class="col-5">
-            <dl class="row">
-                <dt class="col-sm-5">
-                    Owned shares
-                </dt>
-                <dd class="col-sm-5">
-                    @(quantity.ToString("N0"))
-                </dd>
-                <dt class="col-sm-5">
-                    Investment
-                </dt>
-                <dd class="col-sm-5">
-                    @totalInvestment.ToString("C")
-                </dd>
-                <dt class="col-sm-5">
-                    Yield
-                </dt>
-                <dd class="col-sm-5">
-                    @(stockOwnership != null ? (quantity * Model.UnitPrice).ToString("C") : "$0")
-                    @* show percentage increase between total investment and yield *@
-                    @if (stockOwnership != null && quantity != 0)
-                    {
-                        decimal yield = quantity * Model.UnitPrice;
-                        decimal percentage = (yield - totalInvestment) / totalInvestment * 100;
-                        <span>(</span>
-                        @Html.DisplayFor(model => percentage, "PriceChange")
-                        <span>)</span>
-                    }
-                </dd>
-                <div class="col">
-                    <a class="btn btn-secondary btn-sm">Transaction history</a>
-                </div>
-            </dl>
-        </div>
+        @if (isSignedIn)
+        {
+            StockOwnership? stockOwnership = ViewData["StockOwnership"] as StockOwnership;
+            int quantity = stockOwnership?.GetQuantity() ?? 0;
+            decimal totalInvestment = stockOwnership?.GetTotalInvestment() ?? 0;
+
+            <div class="col-lg-4 col-12">
+                <dl class="row">
+                    <dt class="col-5">
+                        Owned shares
+                    </dt>
+                    <dd class="col-5">
+                        @(quantity.ToString("N0"))
+                    </dd>
+                    <dt class="col-5">
+                        Investment
+                    </dt>
+                    <dd class="col-5">
+                        @totalInvestment.ToString("C")
+                    </dd>
+                    <dt class="col-5">
+                        Yield
+                    </dt>
+                    <dd class="col-5">
+                        @(stockOwnership != null ? (quantity * Model.UnitPrice).ToString("C") : "$0")
+                        @* show percentage increase between total investment and yield *@
+                        @if (stockOwnership != null && quantity != 0)
+                        {
+                            decimal yield = quantity * Model.UnitPrice;
+                            decimal percentage = (yield - totalInvestment) / totalInvestment * 100;
+                            <span>(</span>
+                            @Html.DisplayFor(model => percentage, "PriceChange")
+                            <span>)</span>
+                        }
+                    </dd>
+                    <div class="col-5">
+                        <a class="btn btn-secondary btn-sm">Transaction history</a>
+                    </div>
+                </dl>
+            </div>
+        }
     </div>
 
-    <h4>New Transaction</h4>
-    <hr/>
+    @if (isSignedIn)
+    {
+        <h4>New Transaction</h4>
+        <hr/>
 
-    <form asp-action="Transact" method="post">
-        <input type="hidden" name="stockId" value="@Model.Id"/>
+        <form asp-action="Transact" method="post">
+            <input type="hidden" name="stockId" value="@Model.Id"/>
 
-        <div class="row">
-            <div class="col-1">
-                <select name="type" class="form-control">
-                    <option value="buy">Buy</option>
-                    <option value="sell">Sell</option>
-                </select>
+            <div class="row" style="max-width: 500px">
+                <div class="col-3">
+                    <select name="type" class="form-control">
+                        <option value="buy">Buy</option>
+                        <option value="sell">Sell</option>
+                    </select>
+                </div>
+
+                <div class="col">
+                    <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Quantity"/>
+                </div>
+
+                <div class="col-auto">
+                    <input type="submit" value="Transact" class="btn btn-primary"/>
+                </div>
             </div>
-
-            <div class="col-3">
-                <input type="number" id="quantity" name="quantity" class="form-control" placeholder="Quantity"/>
-            </div>
-
-            <div class="col">
-                <input type="submit" value="Transact" class="btn btn-primary"/>
-            </div>
-        </div>
-    </form>
-
-    <br/>
+        </form>
+    }
 
     <br/>
 

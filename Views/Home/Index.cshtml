@@ -14,9 +14,42 @@
     <div class="col-8">
         @if (currentUser != null)
         {
+            decimal profitPercentage = currentUser.GetTotalProfitPercentage();
+            
             <h2 class="display-5">Statistics</h2>
             
-            
+            <div class="row">
+                <div class="col-lg-5 col-12">
+                    <dl class="row">
+                        <dt class="col-5">
+                            @Html.DisplayNameFor(model => currentUser.Balance)
+                        </dt>
+                        <dd class="col-5">
+                            @Html.DisplayFor(model => currentUser.Balance)
+                        </dd>
+                        
+                        
+                        <dt class="col-5">
+                            Total Investment
+                        </dt>
+                        <dd class="col-5">
+                            @currentUser.GetTotalInvestment().ToString("C")
+                        </dd>
+                        <dt class="col-5">
+                            Total Value
+                        </dt>
+                        <dd class="col-5">
+                            @currentUser.GetTotalValue().ToString("C")
+                        </dd>
+                        <dt class="col-5">
+                            Total Profit
+                        </dt>
+                        <dd class="col-5">
+                            @currentUser.GetTotalProfit().ToString("C") (@Html.DisplayFor(model => profitPercentage, "PriceChange"))
+                        </dd>
+                    </dl>
+                </div>
+            </div>
         }
     </div>
 

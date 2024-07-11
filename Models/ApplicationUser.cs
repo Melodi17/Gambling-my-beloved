@@ -19,6 +19,6 @@ public class ApplicationUser : IdentityUser
     public decimal GetNetWorth() => this.Balance + this.GetTotalValue();
     
     public decimal GetTotalProfit() => this.GetTotalValue() - this.GetTotalInvestment();
-    public decimal GetTotalProfitPercentage() => this.Stocks.Sum(x => x.GetTotalYieldPercentage());
+    public decimal GetTotalProfitPercentage() => this.GetTotalProfit() / this.GetTotalInvestment() * 100;
     public List<Stock> GetOwnedStocks() => this.Stocks.Where(x => x.GetQuantity() > 0).Select(x => x.Stock).ToList();
 }

@@ -261,20 +261,13 @@ namespace Gambling_my_beloved.Controllers
             await _context.SaveChangesAsync();
             
             ViewData["Success"] = true;
-            ViewData["Message"] = "Transaction successful";
+            ViewData["Message"] = $"Transaction of {transaction.Amount:C} completed successfully";
             return View(transaction);
         }
 
         private bool StockExists(int id)
         {
             return _context.Stocks.Any(e => e.Id == id);
-        }
-
-        public static string GetStockChangeHtml(Stock stock)
-        {
-            decimal change = stock.GetPriceChange();
-            string color = change > 0 ? "green" : change < 0 ? "red" : "black";
-            return $"<span style='color: {color}'>{change}%</span>";
         }
     }
 }

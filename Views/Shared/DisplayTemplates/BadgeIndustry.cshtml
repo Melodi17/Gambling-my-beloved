@@ -1,0 +1,6 @@
+﻿@model IEnumerable<Industry>
+
+@foreach(Industry industry in Model)
+{
+    <span class="badge bg-secondary">@industry.GetFriendly()</span>
+}

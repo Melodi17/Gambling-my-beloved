@@ -1,4 +1,6 @@
-﻿@model Transaction
+﻿@using Microsoft.AspNetCore.Identity
+@model Transaction
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     bool success = (bool)ViewData["Success"];
@@ -6,15 +8,33 @@
 
     StockOwnership stockOwnership = Model.StockOwnership;
     Stock stock = stockOwnership.Stock;
+
+    ApplicationUser currentUser = await UserManager.GetUserAsync(User);
+    string phrase = (success, Model.Type) switch {
+        (true, TransactionType.Buy) => "Bought",
+        (true, TransactionType.Sell) => "Sold",
+        
+        (false, TransactionType.Buy) => "Failed to buy",
+        (false, TransactionType.Sell) => "Failed to sell",
+        
+        _ => throw new ArgumentOutOfRangeException()
+    };
 }
 
 
 <div class="alert @(success ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
     <h4 class="alert-heading">
-        @(success ? "Successfully" : "Failed to") @(Model.Type == TransactionType.Buy ? "buy" : "sell")
-        @Model.Quantity.ToString("N0") shares of @stock.Symbol
+        @phrase
+        @Model.Quantity.ToString("N0") share(s) of @stock.Symbol at @stock.UnitPrice.ToString("C")/share
     </h4>
     <p>@message</p>
+
+    @if (success)
+    {
+        <hr/>
+        <strong>Transaction time:</strong>
+        @Model.Date.ToString("yyyy-MM-dd HH:mm:ss")
+    }
 </div>
 
 <hr/>

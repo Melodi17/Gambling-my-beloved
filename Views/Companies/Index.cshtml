@@ -52,7 +52,7 @@
                 @Html.DisplayFor(modelItem => item.CEO)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Industries)
+                @Html.DisplayFor(modelItem => item.Industries, "BadgeIndustry")
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

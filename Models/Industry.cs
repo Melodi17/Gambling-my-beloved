@@ -1,40 +1,50 @@
-﻿namespace Gambling_my_beloved.Models;
+﻿using System.Reflection;
+
+namespace Gambling_my_beloved.Models;
 
 public enum Industry
 {
-    Technology,
-    Finance,
-    Healthcare,
-    Energy,
-    ConsumerGoods,
-    Services,
-    BasicMaterials,
-    IndustrialGoods,
-    Utilities,
-    LuxuryGoods,
-    Automotives,
-    Entertainment
+    [Friendly("Technology")] Technology,
+    [Friendly("Finance")] Finance,
+    [Friendly("Healthcare")] Healthcare,
+    [Friendly("Energy")] Energy,
+    [Friendly("Consumer Goods")] ConsumerGoods,
+    [Friendly("Services")] Services,
+    [Friendly("Basic Materials")] BasicMaterials,
+    [Friendly("Industrial Goods")] IndustrialGoods,
+    [Friendly("Utilities")] Utilities,
+    [Friendly("Luxury Goods")] LuxuryGoods,
+    [Friendly("Automotives")] Automotives,
+    [Friendly("Entertainment")] Entertainment
 }
 
-public static class IndustryExtensions
+public class FriendlyAttribute : Attribute
 {
-    public static string ToFriendlyString(this Industry industry)
+    public string FriendlyName { get; }
+
+    public FriendlyAttribute(string friendlyName)
     {
-        return industry switch
+        this.FriendlyName = friendlyName;
+    }
+}
+
+public static class FriendlyExtensions
+{
+    public static string GetFriendly<T>(this T value) where T : Enum
+    {
+        FieldInfo field = value.GetType().GetField(value.ToString());
+        FriendlyAttribute attribute = (FriendlyAttribute)field.GetCustomAttributes(typeof(FriendlyAttribute), false).FirstOrDefault();
+        return attribute?.FriendlyName ?? value.ToString();
+    }
+    
+    public static T FromFriendly<T>(string friendlyName, bool ignoreCase = true) where T : Enum
+    {
+        foreach (T value in Enum.GetValues(typeof(T)))
         {
-            Industry.Technology => "Technology",
-            Industry.Finance => "Finance",
-            Industry.Healthcare => "Healthcare",
-            Industry.Energy => "Energy",
-            Industry.ConsumerGoods => "Consumer Goods",
-            Industry.Services => "Services",
-            Industry.BasicMaterials => "Basic Materials",
-            Industry.IndustrialGoods => "Industrial Goods",
-            Industry.Utilities => "Utilities",
-            Industry.LuxuryGoods => "Luxury Goods",
-            Industry.Automotives => "Automotives",
-            Industry.Entertainment => "Entertainment",
-            _ => throw new ArgumentOutOfRangeException(nameof(industry), industry, null)
-        };
+            if (value.GetFriendly().Equals(friendlyName, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                return value;
+        }
+    
+        throw new ArgumentException($"No {typeof(T).Name} found with friendly name '{friendlyName}'.");
     }
 }

@@ -60,6 +60,7 @@ namespace Gambling_my_beloved.Controllers
         // GET: Companies/Create
         public IActionResult Create()
         {
+            ViewData["Industries"] = Enum.GetValues<Industry>().Select(i => new SelectListItem(i.GetFriendly(), i.ToString()));
             return View();
         }
 
@@ -68,7 +69,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,CEO,LogoUrl,Industries")] Company company)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,CEO,LogoUrl,Industries,Controversy")] Company company)
         {
             if (ModelState.IsValid)
             {
@@ -76,6 +77,8 @@ namespace Gambling_my_beloved.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            
+            ViewData["Industries"] = Enum.GetValues<Industry>().Select(i => new SelectListItem(i.GetFriendly(), i.ToString()));
 
             return View(company);
         }
@@ -93,6 +96,9 @@ namespace Gambling_my_beloved.Controllers
             {
                 return NotFound();
             }
+            
+            ViewData["Industries"] = Enum.GetValues<Industry>().Select(i => new SelectListItem(i.GetFriendly(), i.ToString()));
+            
             return View(company);
         }
 
@@ -101,7 +107,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,CEO,LogoUrl,Industries")] Company company)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,CEO,LogoUrl,Industries,Controversy")] Company company)
         {
             if (id != company.Id)
             {
@@ -128,6 +134,8 @@ namespace Gambling_my_beloved.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            
+            ViewData["Industries"] = Enum.GetValues<Industry>().Select(i => new SelectListItem(i.GetFriendly(), i.ToString()));
             return View(company);
         }
 

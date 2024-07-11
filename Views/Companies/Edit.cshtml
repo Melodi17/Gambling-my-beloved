@@ -35,8 +35,13 @@
             </div>
             <div class="form-group">
                 <label asp-for="Industries" class="control-label"></label>
-                <input asp-for="Industries" class="form-control" />
+                <select asp-for="Industries" class="form-control" asp-items="ViewBag.Industries"></select>
                 <span asp-validation-for="Industries" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Controversy" class="control-label"></label>
+                <input asp-for="Controversy" class="form-control" />
+                <span asp-validation-for="Controversy" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

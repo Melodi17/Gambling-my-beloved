@@ -95,23 +95,23 @@ public class StockEvent
     private static string DescriptionForIndustryEvent(Industry industry, StockEventType type, bool isPositive)
         => (type, isPositive) switch
         {
-            (StockEventType.Demand, true) => $"Demand for {industry.ToFriendlyString()} is on the rise",
-            (StockEventType.Demand, false) => $"{industry.ToFriendlyString()}'s demand is falling",
+            (StockEventType.Demand, true) => $"Demand for {industry.GetFriendly()} is on the rise",
+            (StockEventType.Demand, false) => $"{industry.GetFriendly()}'s demand is falling",
                 
-            (StockEventType.Supply, true) => $"The market is flooded with {industry.ToFriendlyString()} products",
-            (StockEventType.Supply, false) => $"Supply shortages are affecting {industry.ToFriendlyString()}",
+            (StockEventType.Supply, true) => $"The market is flooded with {industry.GetFriendly()} products",
+            (StockEventType.Supply, false) => $"Supply shortages are affecting {industry.GetFriendly()}",
                 
-            (StockEventType.WorldEvent, true) => $"A natural disaster has led to a global shortage of {industry.ToFriendlyString()} products",
-            (StockEventType.WorldEvent, false) => $"After a natural disaster, {industry.ToFriendlyString()} is a low priority",
+            (StockEventType.WorldEvent, true) => $"A natural disaster has led to a global shortage of {industry.GetFriendly()} products",
+            (StockEventType.WorldEvent, false) => $"After a natural disaster, {industry.GetFriendly()} is a low priority",
                 
-            (StockEventType.Regulation, true) => $"New regulations have been passed that favor {industry.ToFriendlyString()}",
-            (StockEventType.Regulation, false) => $"{industry.ToFriendlyString()} is facing increased regulation and scrutiny",
+            (StockEventType.Regulation, true) => $"New regulations have been passed that favor {industry.GetFriendly()}",
+            (StockEventType.Regulation, false) => $"{industry.GetFriendly()} is facing increased regulation and scrutiny",
                 
-            (StockEventType.InterestRate, true) => $"Interest rates have been lowered, benefiting {industry.ToFriendlyString()}",
-            (StockEventType.InterestRate, false) => $"Interest rates are rising, negatively impacting {industry.ToFriendlyString()}",
+            (StockEventType.InterestRate, true) => $"Interest rates have been lowered, benefiting {industry.GetFriendly()}",
+            (StockEventType.InterestRate, false) => $"Interest rates are rising, negatively impacting {industry.GetFriendly()}",
                 
-            (StockEventType.Inflation, true) => $"Inflation is driving up prices for {industry.ToFriendlyString()}",
-            (StockEventType.Inflation, false) => $"Inflation is increasing the costs of {industry.ToFriendlyString()} production",
+            (StockEventType.Inflation, true) => $"Inflation is driving up prices for {industry.GetFriendly()}",
+            (StockEventType.Inflation, false) => $"Inflation is increasing the costs of {industry.GetFriendly()} production",
             
             _ => "Unknown industry event"
         };
@@ -145,6 +145,8 @@ public class StockEvent
         stockEvent.Date = DateTime.Now;
         stockEvent.Industry = (Industry)random.Next(0, Enum.GetValues<Industry>().Length);
         stockEvent.EffectedStocks = companies
+            .Include(c => c.Stocks)
+            .AsEnumerable()
             .Where(c => c.Industries.Contains(stockEvent.Industry.Value))
             .SelectMany(c => c.Stocks)
             .Where(s => !s.Frozen)

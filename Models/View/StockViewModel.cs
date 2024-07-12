@@ -8,7 +8,7 @@ public class StockViewModel
     public decimal? PriceChange { get; set; }
     public decimal? PricePercent { get; set; }
     
-    public StockViewModel(Stock stock, int? price = null, int? quantity = null, decimal? priceChange = null, decimal? pricePercent = null)
+    public StockViewModel(Stock stock, decimal? price = null, int? quantity = null, decimal? priceChange = null, decimal? pricePercent = null)
     {
         this.Stock = stock;
         this.Price = price ?? stock.UnitPrice;

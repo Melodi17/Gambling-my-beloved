@@ -60,10 +60,10 @@
                                     @Html.DisplayNameFor(model => stock.UnitPrice)
                                 </dt>
                                 <dd class="col-sm-5">
-                                    @Html.DisplayFor(model => stock.UnitPrice)
+                                    @stock.UnitPrice.ToCurrency()
                                 </dd>
                                 <dt class="col-sm-5">
-                                    @Html.DisplayNameFor(model => stock.PriceChange)
+                                    @stock.PriceChange.ToCurrency()
                                 </dt>
                                 <dd class="col-sm-5">
                                     @Html.DisplayFor(model => stock.PriceChange, "PriceChange")

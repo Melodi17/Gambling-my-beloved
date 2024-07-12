@@ -36,13 +36,19 @@
                     @Html.DisplayNameFor(model => model.UnitPrice)
                 </dt>
                 <dd class="col-5">
-                    @Html.DisplayFor(model => model.UnitPrice)
+                    @Model.UnitPrice.ToCurrency()
                 </dd>
                 <dt class="col-5">
                     @Html.DisplayNameFor(model => model.PriceChange)
                 </dt>
                 <dd class="col-5">
-                    @Html.DisplayFor(model => model.PriceChange, "PriceChange")
+                    @Model.PriceChange.ToCurrency()
+                </dd>
+                <dt class="col-5">
+                    @Html.DisplayNameFor(model => model.PriceChangePercent)
+                </dt>
+                <dd class="col-5">
+                    @Html.DisplayFor(model => model.PriceChangePercent, "PriceChangeBubble")
                 </dd>
             </dl>
         </div>
@@ -82,13 +88,13 @@
                         Investment
                     </dt>
                     <dd class="col-5">
-                        @totalInvestment.ToString("C")
+                        @totalInvestment.ToCurrency()
                     </dd>
                     <dt class="col-5">
                         Yield
                     </dt>
                     <dd class="col-5">
-                        @(stockOwnership != null ? (quantity * Model.UnitPrice).ToString("C") : "$0")
+                        @(stockOwnership != null ? (quantity * Model.UnitPrice).ToCurrency() : "$0.00")
                         @* show percentage increase between total investment and yield *@
                         @if (stockOwnership != null && quantity != 0)
                         {

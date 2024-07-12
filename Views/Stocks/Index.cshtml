@@ -27,6 +27,9 @@
         <th>
             @Html.DisplayNameFor(model => model.PriceChange)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PriceChangePercent)
+        </th>
         <th></th>
     </tr>
     </thead>
@@ -45,10 +48,13 @@
                 </a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UnitPrice)
+                @item.UnitPrice.ToCurrency()
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PriceChange, "PriceChange")
+                @item.PriceChange.ToCurrency()
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PriceChangePercent, "PriceChangeBubble")
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

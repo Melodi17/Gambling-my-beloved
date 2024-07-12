@@ -19,7 +19,10 @@ public class Stock
     public decimal Volatility { get; set; }
     
     [Display(Name = "Price Change")]
-    public decimal PriceChange => this.GetPriceChangePercent();
+    public decimal PriceChange => this.GetPriceChange();
+    
+    [Display(Name = "Price Change Percent")]
+    public decimal PriceChangePercent => this.GetPriceChangePercent();
 
     public bool Frozen { get; set; } = false;
     

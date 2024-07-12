@@ -27,7 +27,7 @@
             @Html.DisplayNameFor(model => model.UnitPrice)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UnitPrice)
+            @Model.UnitPrice.ToCurrency()
         </dd>
     </dl>
     

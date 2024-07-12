@@ -20,5 +20,9 @@ public class ApplicationUser : IdentityUser
     
     public decimal GetTotalProfit() => this.GetTotalValue() - this.GetTotalInvestment();
     public decimal GetTotalProfitPercentage() => this.GetTotalProfit() / this.GetTotalInvestment() * 100;
-    public List<Stock> GetOwnedStocks() => this.Stocks.Where(x => x.GetQuantity() > 0).Select(x => x.Stock).ToList();
+
+    public List<(int quantity, Stock stock)> GetOwnedStocks() => this.Stocks
+        .Select(x => (x.GetQuantity(), x.Stock))
+        .Where(x => x.Item1 > 0)
+        .ToList();
 }

@@ -1,0 +1,14 @@
+﻿@model decimal
+
+@switch (Model)
+{
+    case > 0:
+        <div style="color: #517040; background-color: #edf4ec;" class="price-change-bubble">+@Model.ToString("0.00")%</div>
+        break;
+    case < 0:
+        <div style="color: #a94442; background-color: #f2dede;" class="price-change-bubble">@Model.ToString("0.00")%</div>
+        break;
+    default:
+        <div style="color: #7e8692; background-color: #e9eaed;" class="price-change-bubble">0.00%</div>
+        break;
+}

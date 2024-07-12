@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gambling_my_beloved;
 
@@ -27,5 +28,16 @@ public static class Extensions
     {
         int count = query.Count();
         return query.Skip(random.Next(count)).First();
+    }
+    
+    public static string ToCurrency(this decimal value)
+    {
+        // round it to a max of 2 decimal places
+        // and add a currency symbol
+        // make sure to use a negative sign, not brackets
+        return "$" + value.ToString("C")
+            .Replace("$", "")
+            .Replace("(", "-")
+            .Replace(")", "");
     }
 }

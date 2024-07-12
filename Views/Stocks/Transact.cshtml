@@ -25,7 +25,7 @@
 <div class="alert @(success ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
     <h4 class="alert-heading">
         @phrase
-        @Model.Quantity.ToString("N0") share(s) of @stock.Symbol at @stock.UnitPrice.ToString("C")/share
+        @Model.Quantity.ToString("N0") share(s) of @stock.Symbol at @stock.UnitPrice.ToCurrency()/share
     </h4>
     <p>@message</p>
 

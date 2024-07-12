@@ -1,11 +1,29 @@
 ﻿@model Gambling_my_beloved.Models.View.StockViewModel
 
-<div class="row">
-    <div class="col-auto">
-        <div class="stock-nameplate" style="background-color: @Model.Stock.Id">@Model.Stock.Symbol</div>
+<div class="row stock-card mb-2">
+    <div class="col">
+        <div class="row">
+            <div class="stock-nameplate stock-nameplate-sm" style="background-color: @Model.Stock.Color; padding-left: 0.75rem;">@Model.Stock.Symbol</div>
+        </div>
+
+        <div class="row">
+            <span class="stock-card-title">@Model.Stock.Company.Name</span>
+        </div>
+
+        @if (Model.Quantity != null)
+        {
+            <div class="row">
+                <span class="text-secondary">@Model.Quantity.Value.ToString("N0") shares owned</span>
+            </div>
+        }
     </div>
-    
-    <div class="col">@Model.Stock.Company.Name</div>
-    
-    
+
+    @if (Model.PricePercent != null)
+    {
+        <div class="col-auto centerfix-col">
+            <div class="row">
+                @Html.DisplayFor(model => model.PricePercent, "PriceChangeBubble")
+            </div>
+        </div>
+    }
 </div>

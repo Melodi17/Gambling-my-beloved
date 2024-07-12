@@ -261,7 +261,7 @@ namespace Gambling_my_beloved.Controllers
             await _context.SaveChangesAsync();
             
             ViewData["Success"] = true;
-            ViewData["Message"] = $"Transaction of {transaction.Amount:C} completed successfully";
+            ViewData["Message"] = $"Transaction of {transaction.Amount.ToCurrency()} completed successfully";
             return View(transaction);
         }
 

@@ -44,7 +44,7 @@
                 <dd class="col-5">
                     @Model.PriceChange.ToCurrency()
                 </dd>
-                <dt class="col-5">
+                <dt class="col-5 centerfix-col">
                     @Html.DisplayNameFor(model => model.PriceChangePercent)
                 </dt>
                 <dd class="col-5">
@@ -148,32 +148,32 @@
     <div id="chartContainer" style="height: 300px; width: 100%;"></div>
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script type="text/javascript">
-                window.onload = function () {
-                    var result = @Html.Raw(ViewData["StockHistory"]);
-                    this.console.log(result);
-        
-                    var DataItem = [];
-                    for (var i = 0; i < result.length; i++) {
-                        DataItem.push({
-                            x: new Date(result[i].Date),
-                            y: result[i].Price
-                        });
-                    }
-                    
-                    var chart = new CanvasJS.Chart("chartContainer", {
-                        animationEnabled: true,
-                        theme: "light2",
-                        data: [{
-                            markerSize: 0,
-                            lineColor: "@Model.Color",
-                            markerColor: "@Model.Color",
-                            type: "line",
-                            dataPoints: DataItem
-                        }]
-                    });
-                    chart.render();
-                }
-        </script>
+        window.onload = function () {
+            var result = @Html.Raw(ViewData["StockHistory"]);
+            this.console.log(result);
+
+            var DataItem = [];
+            for (var i = 0; i < result.length; i++) {
+                DataItem.push({
+                    x: new Date(result[i].Date),
+                    y: result[i].Price
+                });
+            }
+            
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                theme: "light2",
+                data: [{
+                    markerSize: 0,
+                    lineColor: "@Model.Color",
+                    markerColor: "@Model.Color",
+                    type: "line",
+                    dataPoints: DataItem
+                }]
+            });
+            chart.render();
+        }
+    </script>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

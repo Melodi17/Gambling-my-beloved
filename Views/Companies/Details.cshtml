@@ -1,3 +1,4 @@
+@using Gambling_my_beloved.Models.View
 @model Gambling_my_beloved.Models.Company
 
 @{
@@ -37,43 +38,26 @@
     @* Show stocks *@
 
     <h4>Stocks</h4>
-    <div class="row">
-        @foreach (Stock stock in Model.Stocks)
-        {
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <a asp-controller="Stocks" asp-action="Details" asp-route-id="@stock.Id">
-                                @stock.Symbol
-                            </a>
-                        </h5>
-                        <div class="card-text">
-                            <dl class="row">
-                                <dt class="col-sm-5">
-                                    @Html.DisplayNameFor(model => stock.Symbol)
-                                </dt>
-                                <dd class="col-sm-5">
-                                    @Html.DisplayFor(model => stock.Symbol)
-                                </dd>
-                                <dt class="col-sm-5">
-                                    @Html.DisplayNameFor(model => stock.UnitPrice)
-                                </dt>
-                                <dd class="col-sm-5">
-                                    @stock.UnitPrice.ToCurrency()
-                                </dd>
-                                <dt class="col-sm-5">
-                                    @stock.PriceChange.ToCurrency()
-                                </dt>
-                                <dd class="col-sm-5">
-                                    @Html.DisplayFor(model => stock.PriceChange, "PriceChange")
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
+    <hr/>
+
+    <div class="container">
+        <div class="row">
+            @{
+                List<StockViewModel> stockViewModels = Model.Stocks.Select(x =>
+                    new StockViewModel(x, price: x.UnitPrice, priceChange: x.PriceChange, pricePercent: x.PriceChangePercent)).ToList();
+            }
+
+            @foreach (StockViewModel stockViewModel in stockViewModels)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                    @Html.DisplayFor(modelItem => stockViewModel, "StockViewModel")
+                    @if (stockViewModel != stockViewModels.Last())
+                    {
+                        <hr/>
+                    }
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>
 <div>

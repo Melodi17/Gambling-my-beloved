@@ -20,8 +20,8 @@
             <h2 class="display-5">Statistics</h2>
             <hr/>
 
-            <div class="row ms-1">
-                <div class="col-lg-5 col-12">
+            <div class="container">
+                <div class="col-lg-6 col-12">
                     <dl class="row">
                         <dt class="col-5">
                             @Html.DisplayNameFor(model => currentUser.Balance)
@@ -35,7 +35,6 @@
                         <dd class="col-5">
                             @currentUser.GetNetWorth().ToCurrency()
                         </dd>
-
 
                         <dt class="col-5">
                             Total Investment
@@ -63,10 +62,22 @@
             <hr/>
 
             <div class="container">
-                @foreach (StockViewModel stockViewModel in (IEnumerable<StockViewModel>)ViewData["StockViewModels"]!)
-                {
-                    @Html.DisplayFor(modelItem => stockViewModel, "StockViewModel")
-                }
+                <div class="row">
+                    @{
+                        List<StockViewModel> stockViewModels = (List<StockViewModel>)ViewData["StockViewModels"]!;
+                    }
+
+                    @foreach (StockViewModel stockViewModel in stockViewModels)
+                    {
+                        <div class="col-lg-6 col-md-12">
+                            @Html.DisplayFor(modelItem => stockViewModel, "StockViewModel")
+                            @if (stockViewModel != stockViewModels.Last())
+                            {
+                                <hr/>
+                            }
+                        </div>
+                    }
+                </div>
             </div>
         }
     </div>
@@ -75,7 +86,7 @@
         <h2 class="display-5">Recent news</h2>
         <hr/>
 
-        <div class="row">
+        <div class="row" style="overflow-y: scroll; height: 70vh;">
             @foreach (var item in ((IEnumerable<StockEvent>)ViewData["StockEvents"])!
                 .Zip((IEnumerable<Stock[]>)ViewData["EffectedStocks"]!,
                     (stockEvent, stocks) => new { StockEvent = stockEvent, Stocks = stocks }))

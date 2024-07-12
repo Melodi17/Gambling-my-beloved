@@ -1,29 +1,28 @@
 ﻿@model Gambling_my_beloved.Models.View.StockViewModel
 
-<div class="row stock-card mb-2">
+<a class="row stock-card no-dec text-black" asp-controller="Stocks" asp-action="Details" asp-route-id="@Model.Stock.Id">
     <div class="col">
-        <div class="row">
-            <div class="stock-nameplate stock-nameplate-sm" style="background-color: @Model.Stock.Color; padding-left: 0.75rem;">@Model.Stock.Symbol</div>
+        <div class="stock-nameplate stock-nameplate-sm" style="background-color: @Model.Stock.Color;">
+            @Model.Stock.Symbol
         </div>
 
-        <div class="row">
-            <span class="stock-card-title">@Model.Stock.Company.Name</span>
-        </div>
+        <span class="stock-card-title">@Model.Stock.Company.Name</span>
+        <br/>
 
         @if (Model.Quantity != null)
         {
-            <div class="row">
-                <span class="text-secondary">@Model.Quantity.Value.ToString("N0") shares owned</span>
-            </div>
+            <span class="text-secondary">@Model.Quantity.Value.ToString("N0") shares owned at @Model.Price.ToCurrency() per share</span>
+        }
+        else
+        {
+            <span class="text-secondary">@Model.Price.ToCurrency() per share</span>
         }
     </div>
 
     @if (Model.PricePercent != null)
     {
         <div class="col-auto centerfix-col">
-            <div class="row">
-                @Html.DisplayFor(model => model.PricePercent, "PriceChangeBubble")
-            </div>
+            @Html.DisplayFor(model => model.PricePercent, "PriceChangeBubble")
         </div>
     }
-</div>
+</a>

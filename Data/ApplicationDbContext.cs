@@ -11,6 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<StockOwnership> StockOwnerships { get; set; }
     public DbSet<StockEvent> StockEvents { get; set; }
+    public DbSet<StockBinding> StockBindings { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

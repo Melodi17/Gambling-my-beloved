@@ -5,6 +5,7 @@ using Gambling_my_beloved.Models;
 using Gambling_my_beloved.Models.View;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Gambling_my_beloved.Controllers;
 
@@ -56,6 +57,21 @@ public class HomeController : Controller
                 .ThenInclude(s => s.Stock)
                 .ThenInclude(s => s.Company)
                 .FirstOrDefault(u => u.Id == userId);
+            
+            List<(int quantity, Stock stock)> ownedStocks = user.GetOwnedStocks();
+            ViewData["StockViewModels"] = ownedStocks
+                .Select(x => new StockViewModel(x.stock, quantity: x.quantity, price: x.stock.UnitPrice,
+                    priceChange: x.stock.PriceChange, pricePercent: x.stock.PriceChangePercent)).ToList();
+        
+            // ViewData["StockHistory"] = JsonConvert.SerializeObject(stock.PriceHistory
+            //     .Select(p => new { Date = p.Date, Price = p.Price }));
+        
+            ViewData["StockHistory"] = JsonConvert.SerializeObject(ownedStocks.Select(s => new
+            {
+                Symbol = s.stock.Symbol,
+                Color = s.stock.Color,
+                History = s.stock.PriceHistory.Select(p => new { Date = p.Date, Price = p.Price, PriceText = p.Price.ToCurrency() })
+            }));
         }
 
         ViewData["User"] = user;
@@ -63,10 +79,6 @@ public class HomeController : Controller
         ViewData["StockEvents"] = eventsList;
         ViewData["EffectedStocks"] = eventsList.Select(x => x.EffectedStocks
             .Select(id => stocks.First(stock => stock.Id == id)).ToArray()).ToList();
-
-        ViewData["StockViewModels"] = user.GetOwnedStocks()
-            .Select(x => new StockViewModel(x.stock, quantity: x.quantity, price: x.stock.UnitPrice,
-                priceChange: x.stock.PriceChange, pricePercent: x.stock.PriceChangePercent)).ToList();
 
         return View();
     }

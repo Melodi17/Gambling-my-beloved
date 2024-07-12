@@ -156,11 +156,12 @@
             for (var i = 0; i < result.length; i++) {
                 DataItem.push({
                     x: new Date(result[i].Date),
-                    y: result[i].Price
+                    y: result[i].Price,
                 });
             }
             
             var chart = new CanvasJS.Chart("chartContainer", {
+                zoomEnabled: true,
                 animationEnabled: true,
                 theme: "light2",
                 data: [{

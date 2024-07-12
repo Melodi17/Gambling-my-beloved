@@ -12,7 +12,7 @@
 <h1 class="display-4">Welcome</h1>
 
 <div class="row">
-    <div class="col-8">
+    <div class="col-md-8 col-12">
         @if (currentUser != null)
         {
             decimal profitPercentage = currentUser.GetTotalProfitPercentage();
@@ -55,6 +55,62 @@
                             @currentUser.GetTotalProfit().ToCurrency() (@Html.DisplayFor(model => profitPercentage, "PriceChange"))
                         </dd>
                     </dl>
+                </div>
+                
+                <div class="col-12">
+                    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+                    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                    <script type="text/javascript">
+                        window.onload = function () {
+                            var result = @Html.Raw(ViewData["StockHistory"]);
+                            this.console.log(result);
+                            
+                            // result is { Symbol: string, Color: string, History: { Date: string, Price: number, PriceText: string }[] }[]
+                            
+                            var ChartData = [];
+                            
+                            for (var i = 0; i < result.length; i++) {
+                                var DataItem = [];
+                                for (var j = 0; j < result[i].History.length; j++) {
+                                    DataItem.push({
+                                        x: new Date(result[i].History[j].Date),
+                                        y: result[i].History[j].Price,
+                                        label: "Stock: " + result[i].Symbol + ", Price: " + result[i].History[j].PriceText,
+                                    });
+                                }
+                                
+                                ChartData.push({
+                                    type: "line",
+                                    name: result[i].Symbol,
+                                    showInLegend: true,
+                                    dataPoints: DataItem,
+                                    color: result[i].Color,
+                                });
+                            }
+                            
+                            var chart = new CanvasJS.Chart("chartContainer", {
+                                zoomEnabled: true,
+                                animationEnabled: true,
+                                theme: "light2",
+                                title: {
+                                    text: "Portfolio Performance",
+                                },
+                                axisY: {
+                                    title: "Price",
+                                    prefix: "$",
+                                },
+                                legend: {
+                                    cursor: "pointer",
+                                    verticalAlign: "top",
+                                    horizontalAlign: "center",
+                                    dockInsidePlotArea: true,
+                                },
+                                data: ChartData,
+                            });
+                            
+                            chart.render();
+                        }
+                    </script>
                 </div>
             </div>
 

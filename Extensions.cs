@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.Net;
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gambling_my_beloved;
@@ -39,5 +41,22 @@ public static class Extensions
             .Replace("$", "")
             .Replace("(", "-")
             .Replace(")", "");
+    }
+}
+
+public static class Utils
+{
+    public static async Task<decimal> GetRealStockPriceAsync(string stock, string stockExchange)
+    {
+        string url = $"https://www.google.com/finance/quote/{stock}:{stockExchange}";
+        string regex = "data-last-price=\"(.+?)\"";
+        
+        string html = await new WebClient().DownloadStringTaskAsync(url);
+        Match match = Regex.Match(html, regex);
+        
+        if (match.Success)
+            return decimal.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+        
+        return 0;
     }
 }

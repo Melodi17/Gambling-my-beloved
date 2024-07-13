@@ -43,6 +43,10 @@ public class Stock
     {
         if (newPrice < 0)
             newPrice = Global.Random.Next(1, 10) * 0.01m;
+        
+        // round to 2 decimal places
+        newPrice = Math.Round(newPrice, 3);
+        
         this.UnitPrice = newPrice;
         this.PriceHistory.Add(new()
         {

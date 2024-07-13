@@ -19,8 +19,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHostedService<RandomEventService>();
-
-
+builder.Services.AddHostedService<RealStockSyncService>();
 
 var app = builder.Build();
 

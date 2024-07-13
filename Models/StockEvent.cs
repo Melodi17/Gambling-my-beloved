@@ -116,21 +116,19 @@ public class StockEvent
             _ => "Unknown industry event"
         };
 
-    public static StockEvent GenerateRandomTargetedEventForCompany(Company company, bool positive)
+    public static StockEvent GenerateRandomTargetedEventForStock(Stock stock, bool positive)
     {
         Random random = Global.Random;
         StockEvent stockEvent = new();
         
         stockEvent.Date = DateTime.Now;
-        stockEvent.Company = company;
-        stockEvent.EffectedStocks = company.Stocks
-            .Where(s => !s.Frozen)
-            .Select(s => s.Id).ToList();
+        stockEvent.Company = stock.Company;
+        stockEvent.EffectedStocks = new() { stock.Id };
         stockEvent.Type = CompanyEvents.RandomElement(random);
         stockEvent.IsPositive = positive;
         stockEvent.Weight = 0;
         
-        stockEvent.Description = DescriptionForCompanyEvent(company, stockEvent.Type, stockEvent.IsPositive);
+        stockEvent.Description = DescriptionForCompanyEvent(stock.Company, stockEvent.Type, stockEvent.IsPositive);
         
         return stockEvent;
     }

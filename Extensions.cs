@@ -46,12 +46,12 @@ public static class Extensions
 
 public static class Utils
 {
-    public static async Task<decimal> GetRealStockPriceAsync(string stock, string stockExchange)
+    public static decimal GetRealStockPrice(string stock, string stockExchange)
     {
         string url = $"https://www.google.com/finance/quote/{stock}:{stockExchange}";
         string regex = "data-last-price=\"(.+?)\"";
         
-        string html = await new WebClient().DownloadStringTaskAsync(url);
+        string html = new WebClient().DownloadString(url);
         Match match = Regex.Match(html, regex);
         
         if (match.Success)

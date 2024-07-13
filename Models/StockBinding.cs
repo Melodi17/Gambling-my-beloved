@@ -10,7 +10,7 @@ public class StockBinding
     public BindingType Type { get; set; }
     
     public string BindTarget { get; set; }
-    public double Multiplier { get; set; }
+    public decimal Multiplier { get; set; }
 }
 
 public enum BindingType

@@ -69,8 +69,8 @@ public class StockEvent
             (StockEventType.Acquisition, true) => $"Another company has been acquired by {company}",
             (StockEventType.Acquisition, false) => $"{company} has been taken over by another company",
 
-            (StockEventType.Financial, true) => $"Bankruptcy has been declared by {company}",
-            (StockEventType.Financial, false) => $"Record profits have been reported by {company}",
+            (StockEventType.Financial, true) => $"Record profits have been reported by {company}",
+            (StockEventType.Financial, false) => $"Bankruptcy has been declared by {company}",
 
             (StockEventType.IPO, true) => $"The public market now includes {company}",
             (StockEventType.IPO, false) => $"{company} has transitioned to a private entity",
@@ -116,6 +116,25 @@ public class StockEvent
             _ => "Unknown industry event"
         };
 
+    public static StockEvent GenerateRandomTargetedEventForCompany(Company company, bool positive)
+    {
+        Random random = Global.Random;
+        StockEvent stockEvent = new();
+        
+        stockEvent.Date = DateTime.Now;
+        stockEvent.Company = company;
+        stockEvent.EffectedStocks = company.Stocks
+            .Where(s => !s.Frozen)
+            .Select(s => s.Id).ToList();
+        stockEvent.Type = CompanyEvents.RandomElement(random);
+        stockEvent.IsPositive = positive;
+        stockEvent.Weight = 0;
+        
+        stockEvent.Description = DescriptionForCompanyEvent(company, stockEvent.Type, stockEvent.IsPositive);
+        
+        return stockEvent;
+    }
+
     public static StockEvent GenerateRandomEventForCompany(DbSet<Company> companies)
     {
         Random random = Global.Random;
@@ -129,8 +148,8 @@ public class StockEvent
             .Where(s => !s.Frozen)
             .Select(s => s.Id).ToList();
         stockEvent.Type = CompanyEvents.RandomElement(random);
-        stockEvent.IsPositive = random.Next(0, 2) == 0;
         stockEvent.Weight = GenerateWeight(random, stockEvent.Company);
+        stockEvent.IsPositive = stockEvent.Weight > 0;
 
         stockEvent.Description = DescriptionForCompanyEvent(stockEvent.Company, stockEvent.Type, stockEvent.IsPositive);
 
@@ -153,8 +172,8 @@ public class StockEvent
             .Select(s => s.Id)
             .ToList();
         stockEvent.Type = IndustryEvents[random.Next(IndustryEvents.Length)];
-        stockEvent.IsPositive = random.Next(0, 2) == 0;
         stockEvent.Weight = GenerateWeight(random);
+        stockEvent.IsPositive = stockEvent.Weight > 0;
 
         stockEvent.Description = DescriptionForIndustryEvent(stockEvent.Industry.Value, stockEvent.Type, stockEvent.IsPositive);
 

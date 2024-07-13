@@ -30,7 +30,7 @@ public class RandomEventService : IHostedService, IDisposable
     private void UpdatePrice(Stock stock, StockEvent stockEvent, DateTime time)
     {
         decimal initialPrice = stock.UnitPrice;
-        decimal priceChange = stock.UnitPrice * stockEvent.Weight * (stockEvent.IsPositive ? 1 : -1);
+        decimal priceChange = stock.UnitPrice * stockEvent.Weight;
         
         // factor in the stock's volatility, which ranges between 0 and 10
         priceChange *= stock.Volatility / 10;
@@ -58,31 +58,6 @@ public class RandomEventService : IHostedService, IDisposable
         StockEvent stockEvent = Global.Random.Next(0, 5) == 0 
             ? StockEvent.GenerateRandomEventForIndustry(dbContext.Companies)
             : StockEvent.GenerateRandomEventForCompany(dbContext.Companies);
-
-        // if (stockEvent.Industry != null)
-        // {
-        //     // Get all companies in the industry
-        //     IQueryable<Company> companies = dbContext.Companies
-        //         .Where(c => c.Industries.Contains(stockEvent.Industry.Value));
-        //     
-        //     // Apply the event to all companies in the industry
-        //     foreach (Company company in companies.Include(company => company.Stocks)
-        //                  .ThenInclude(stock => stock.PriceHistory))
-        //     foreach (Stock stock in company.Stocks)
-        //         UpdatePrice(stock, stockEvent);
-        // }
-        // else if (stockEvent.Company != null)
-        // {
-        //     // Apply the event to the company
-        //     Company company = dbContext.Companies
-        //         .Where(c => c.Id == stockEvent.Company.Id)
-        //         .Include(c => c.Stocks)
-        //         .ThenInclude(s => s.PriceHistory)
-        //         .First();
-        //     
-        //     foreach (Stock stock in company.Stocks)
-        //         UpdatePrice(stock, stockEvent);
-        // }
         
         IQueryable<Stock> stocks = dbContext.Stocks
             .Include(stock => stock.PriceHistory);

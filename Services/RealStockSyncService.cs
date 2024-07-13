@@ -9,6 +9,8 @@ public class RealStockSyncService : IHostedService, IDisposable
     private readonly ILogger<RandomEventService> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private Timer? _timer = null;
+    
+    private Dictionary<int, decimal> _stockPrices = new();
 
     public RealStockSyncService(ILogger<RandomEventService> logger, IServiceScopeFactory scopeFactory)
     {
@@ -22,7 +24,7 @@ public class RealStockSyncService : IHostedService, IDisposable
         _logger.LogInformation("Real Stock Sync Service running.");
 
         _timer = new Timer(DoWork, null, TimeSpan.Zero,
-            this.GetRandomTimeSpan());
+            TimeSpan.FromMinutes(1));
 
         return Task.CompletedTask;
     }
@@ -40,57 +42,39 @@ public class RealStockSyncService : IHostedService, IDisposable
         this._logger.Log(LogLevel.Information, 
             $"Stock {stock.Symbol} price changed from {initialPrice} to {stock.UnitPrice} due to event \"{stockEvent.Description}\"");
     }
-
-    private TimeSpan GetRandomTimeSpan()
-    {
-        // return TimeSpan.FromSeconds(1);
-        return TimeSpan.FromSeconds(Global.Random.Next(10, 30));
-        // return TimeSpan.FromMinutes(Global.Random.Next(3, 10));
-    }
-
+    
     private void DoWork(object? state)
     {
         using IServiceScope scope = this._scopeFactory.CreateScope();
         ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        
-        this._timer!.Change(this.GetRandomTimeSpan(), TimeSpan.Zero);
 
-        StockEvent stockEvent = Global.Random.Next(0, 5) == 0 
-            ? StockEvent.GenerateRandomEventForIndustry(dbContext.Companies)
-            : StockEvent.GenerateRandomEventForCompany(dbContext.Companies);
-
-        // if (stockEvent.Industry != null)
-        // {
-        //     // Get all companies in the industry
-        //     IQueryable<Company> companies = dbContext.Companies
-        //         .Where(c => c.Industries.Contains(stockEvent.Industry.Value));
-        //     
-        //     // Apply the event to all companies in the industry
-        //     foreach (Company company in companies.Include(company => company.Stocks)
-        //                  .ThenInclude(stock => stock.PriceHistory))
-        //     foreach (Stock stock in company.Stocks)
-        //         UpdatePrice(stock, stockEvent);
-        // }
-        // else if (stockEvent.Company != null)
-        // {
-        //     // Apply the event to the company
-        //     Company company = dbContext.Companies
-        //         .Where(c => c.Id == stockEvent.Company.Id)
-        //         .Include(c => c.Stocks)
-        //         .ThenInclude(s => s.PriceHistory)
-        //         .First();
-        //     
-        //     foreach (Stock stock in company.Stocks)
-        //         UpdatePrice(stock, stockEvent);
-        // }
-        
-        IQueryable<Stock> stocks = dbContext.Stocks
-            .Include(stock => stock.PriceHistory);
-
-        foreach (Stock stock in stockEvent.EffectedStocks.Select(id => stocks.First(stock => stock.Id == id)))
-            UpdatePrice(stock, stockEvent, stockEvent.Date);
-        
-        dbContext.StockEvents.Add(stockEvent);
+        foreach (StockBinding stockBinding in dbContext.StockBindings.Where(binding => binding.Type == BindingType.RealStock))
+        {
+            Stock stock = dbContext.Stocks
+                .Include(stock => stock.Company)
+                .ThenInclude(company => company.Stocks)
+                .First(stock => stock.Id == stockBinding.StockId);
+            string[] stockInfo = stockBinding.BindTarget.Split(':');
+            string stockSymbol = stockInfo[0];
+            string stockExchange = stockInfo[1];
+            decimal price = Utils.GetRealStockPrice(stockSymbol, stockExchange);
+            if (!_stockPrices.ContainsKey(stock.Id))
+                _stockPrices.Add(stock.Id, price);
+            else if (_stockPrices[stock.Id] == price)
+                continue;
+            
+            _stockPrices[stock.Id] = price;
+            
+            decimal initialPrice = stock.UnitPrice;
+            decimal newPrice = price * stockBinding.Multiplier;
+            
+            StockEvent stockEvent = StockEvent.GenerateRandomTargetedEventForCompany(stock.Company, initialPrice < newPrice);
+            stock.UpdatePrice(price * stockBinding.Multiplier, stockEvent.Date);
+            
+            dbContext.StockEvents.Add(stockEvent);
+            
+            _logger.LogInformation($"Stock {stock.Symbol} price changed from {initialPrice} to {stock.UnitPrice} due to real stock price change");
+        }
 
         dbContext.SaveChanges();
     }

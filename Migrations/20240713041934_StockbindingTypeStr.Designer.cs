@@ -3,6 +3,7 @@ using System;
 using Gambling_my_beloved.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gambling_my_beloved.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240713041934_StockbindingTypeStr")]
+    partial class StockbindingTypeStr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.6");
@@ -175,8 +178,8 @@ namespace Gambling_my_beloved.Migrations
                     b.Property<string>("BindTarget")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Multiplier")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Multiplier")
+                        .HasColumnType("REAL");
 
                     b.Property<int>("StockId")
                         .HasColumnType("INTEGER");

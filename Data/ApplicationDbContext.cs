@@ -31,6 +31,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                     .ToList()
             );
 
+        modelBuilder
+            .Entity<StockBinding>()
+            .Property(e => e.Type)
+            .HasConversion(
+                v => v.ToString(),
+                v => (BindingType)Enum.Parse(typeof(BindingType), v, true)
+            );
+
+
         base.OnModelCreating(modelBuilder);
     }
 }

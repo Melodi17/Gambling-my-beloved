@@ -20,6 +20,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHostedService<RandomEventService>();
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

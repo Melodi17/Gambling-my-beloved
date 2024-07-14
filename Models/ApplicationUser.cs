@@ -19,7 +19,11 @@ public class ApplicationUser : IdentityUser
     public decimal GetNetWorth() => this.Balance + this.GetTotalValue();
     
     public decimal GetTotalProfit() => this.GetTotalValue() - this.GetTotalInvestment();
-    public decimal GetTotalProfitPercentage() => this.GetTotalProfit() / this.GetTotalInvestment() * 100;
+    public decimal GetTotalProfitPercentage()
+    {
+        try { return this.GetTotalProfit() / this.GetTotalInvestment() * 100; }
+        catch { return 0; }
+    }
 
     public List<(int quantity, Stock stock)> GetOwnedStocks() => this.Stocks
         .Select(x => (x.GetQuantity(), x.Stock))

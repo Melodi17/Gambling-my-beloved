@@ -24,23 +24,9 @@ public class RealStockSyncService : IHostedService, IDisposable
         _logger.LogInformation("Real Stock Sync Service running.");
 
         _timer = new Timer(DoWork, null, TimeSpan.Zero,
-            TimeSpan.FromMinutes(1));
+            TimeSpan.FromMinutes(5));
 
         return Task.CompletedTask;
-    }
-
-    private void UpdatePrice(Stock stock, StockEvent stockEvent, DateTime time)
-    {
-        decimal initialPrice = stock.UnitPrice;
-        decimal priceChange = stock.UnitPrice * stockEvent.Weight * (stockEvent.IsPositive ? 1 : -1);
-
-        // factor in the stock's volatility, which ranges between 0 and 10
-        priceChange *= stock.Volatility / 10;
-
-        stock.UpdatePrice(stock.UnitPrice + priceChange, time);
-
-        this._logger.Log(LogLevel.Information,
-            $"Stock {stock.Symbol} price changed from {initialPrice} to {stock.UnitPrice} due to event \"{stockEvent.Description}\"");
     }
 
     private void DoWork(object? state)

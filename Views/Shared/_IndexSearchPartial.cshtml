@@ -1,10 +1,10 @@
 ﻿ @* ReSharper disable once Mvc.ActionNotResolved *@
  <form asp-action="Index">
-    <div class="row">
-        <div class="col-md-3">
+    <div class="row" style="max-width: 500px">
+        <div class="col">
             <input type="text" id="SearchQuery" name="SearchQuery" class="form-control" placeholder="Search" value="@ViewData["SearchQuery"]"/>
         </div>
-        <div class="col">
+        <div class="col-auto">
             <input type="submit" value="Filter" class="btn btn-primary"/>
         </div>
     </div>

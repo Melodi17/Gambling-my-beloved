@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gambling_my_beloved.Data;
 using Gambling_my_beloved.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 
@@ -70,6 +71,7 @@ namespace Gambling_my_beloved.Controllers
         }
 
         // GET: Stocks/Create
+        [Authorize(Roles = Roles.Administrator)]
         public IActionResult Create()
         {
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
@@ -81,6 +83,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Create([Bind("Id,Symbol,CompanyId,UnitPrice,Volatility,Color")] Stock stock)
         {
             if (ModelState.IsValid)
@@ -95,6 +98,7 @@ namespace Gambling_my_beloved.Controllers
         }
 
         // GET: Stocks/Edit/5
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -117,6 +121,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Symbol,CompanyId,UnitPrice,Volatility,Color")] Stock stock)
         {
             if (id != stock.Id)
@@ -151,6 +156,7 @@ namespace Gambling_my_beloved.Controllers
         }
 
         // GET: Stocks/Delete/5
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -172,6 +178,7 @@ namespace Gambling_my_beloved.Controllers
         // POST: Stocks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var stock = await _context.Stocks.FindAsync(id);
@@ -186,6 +193,7 @@ namespace Gambling_my_beloved.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Transact(int stockId, TransactionType type, int quantity)
         {
             Stock stock = await _context.Stocks

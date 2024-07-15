@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gambling_my_beloved.Data;
 using Gambling_my_beloved.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gambling_my_beloved.Controllers
 {
@@ -58,6 +59,7 @@ namespace Gambling_my_beloved.Controllers
         }
 
         // GET: Companies/Create
+        [Authorize(Roles = Roles.Administrator)]
         public IActionResult Create()
         {
             ViewData["Industries"] = Enum.GetValues<Industry>().Select(i => new SelectListItem(i.GetFriendly(), i.ToString()));
@@ -69,6 +71,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,CEO,LogoUrl,Industries,Controversy")] Company company)
         {
             if (ModelState.IsValid)
@@ -84,6 +87,7 @@ namespace Gambling_my_beloved.Controllers
         }
 
         // GET: Companies/Edit/5
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -107,6 +111,7 @@ namespace Gambling_my_beloved.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,CEO,LogoUrl,Industries,Controversy")] Company company)
         {
             if (id != company.Id)
@@ -140,6 +145,7 @@ namespace Gambling_my_beloved.Controllers
         }
 
         // GET: Companies/Delete/5
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -160,6 +166,7 @@ namespace Gambling_my_beloved.Controllers
         // POST: Companies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var company = await _context.Companies.FindAsync(id);

@@ -1,7 +1,7 @@
 @model IEnumerable<Gambling_my_beloved.Models.Stock>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "All Stocks";
 }
 
 <h1 class="display-4">All Stocks</h1>
@@ -34,7 +34,6 @@
         <th>
             @Html.DisplayNameFor(model => model.PriceChangePercent)
         </th>
-        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -59,11 +58,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PriceChangePercent, "PriceChange")
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
     }

@@ -29,16 +29,40 @@ public class HomeController : Controller
     {
         IQueryable<StockEvent> events = this._context.StockEvents
             .OrderByDescending(e => e.Date)
-            .Take(5)
-            .Include(e => e.Company)
-            .ThenInclude(e => e.Stocks)
-            .ThenInclude(s => s.PriceHistory);
-
-        List<StockEvent> eventsList = events.ToList();
+            .Take(5);
         
+        List<StockEvent> eventsList = events.ToList();
+
+        // var events = this._context.StockEvents
+        //     .OrderByDescending(e => e.Date)
+        //     .Take(5)
+        //     .Select(e => new
+        //     {
+        //         e.Id,
+        //         e.Date,
+        //         e.Company,
+        //         EffectedStocks = e.EffectedStocks
+        //             .Select(id => this._context.Stocks.FirstOrDefault(s => s.Id == id))
+        //             .Select(s => new
+        //             {
+        //                 s.Id,
+        //                 s.Symbol,
+        //                 PriceHistory = s.PriceHistory
+        //                     .OrderByDescending(p => p.Date)
+        //                     .Take(2)
+        //                     .Select(p => new
+        //                     {
+        //                         p.Date,
+        //                         p.Price
+        //                     }).ToList()
+        //             }).ToList()
+        //     }).ToList();
+
         IQueryable<Stock> stocks = this._context.Stocks
             .Include(s => s.Company)
-            .Include(s => s.PriceHistory);
+            .Include(s => s.PriceHistory
+                .OrderByDescending(p => p.Date)
+                .Take(5));
 
         ApplicationUser? user = null;
         if (this._signInManager.IsSignedIn(User))
@@ -47,34 +71,37 @@ public class HomeController : Controller
             user = this._context.Users
                 .Where(u => u.Id == userId)
                 .Include(u => u.Stocks)
-                    .ThenInclude(s => s.Stock)
-                    .ThenInclude(s => s.PriceHistory)
+                .ThenInclude(s => s.Stock)
+                .ThenInclude(s => s.PriceHistory
+                    .OrderByDescending(p => p.Date)
+                    .Take(100))
                 .Include(u => u.Stocks)
-                    .ThenInclude(s => s.Transactions)
+                .ThenInclude(s => s.Transactions)
                 .Include(u => u.Stocks)
-                    .ThenInclude(s => s.Stock)
-                    .ThenInclude(s => s.Company)
+                .ThenInclude(s => s.Stock)
+                .ThenInclude(s => s.Company)
                 .FirstOrDefault();
-            
+
             List<(int quantity, Stock stock)> ownedStocks = user.GetOwnedStocks();
             ViewData["StockViewModels"] = ownedStocks
                 .Select(x => new StockViewModel(x.stock, quantity: x.quantity, price: x.stock.UnitPrice,
                     priceChange: x.stock.PriceChange, pricePercent: x.stock.PriceChangePercent)).ToList();
-        
+
             // ViewData["StockHistory"] = JsonConvert.SerializeObject(stock.PriceHistory
             //     .Select(p => new { Date = p.Date, Price = p.Price }));
-        
+
             ViewData["StockHistory"] = JsonConvert.SerializeObject(ownedStocks.Select(s => new
             {
                 Symbol = s.stock.Symbol,
                 Color = s.stock.Color,
-                History = s.stock.PriceHistory.Select(p => new { Date = p.Date, Price = p.Price, PriceText = p.Price.ToCurrency() })
+                History = s.stock.PriceHistory.Select(p => new
+                    { Date = p.Date, Price = p.Price, PriceText = p.Price.ToCurrency() })
             }));
         }
 
         ViewData["User"] = user;
 
-        ViewData["StockEvents"] = eventsList;
+        ViewData["StockEvents"] = events;
         ViewData["EffectedStocks"] = eventsList.Select(x => x.EffectedStocks
             .Select(id => stocks.First(stock => stock.Id == id)).ToArray()).ToList();
 

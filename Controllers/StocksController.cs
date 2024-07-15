@@ -29,7 +29,9 @@ namespace Gambling_my_beloved.Controllers
         {
             IQueryable<Stock> stocks = this._context.Stocks
                 .Include(s => s.Company)
-                .Include(s => s.PriceHistory)
+                .Include(s => s.PriceHistory
+                    .OrderByDescending(p => p.Date)
+                    .Take(2))
                 .OrderBy(s => s.Symbol)
                 .Select(x => x);
 

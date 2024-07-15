@@ -2,6 +2,7 @@
 
 namespace Gambling_my_beloved.Models;
 
+[Index(nameof(Date), AllDescending = true)]
 public class StockEvent
 {
     public int Id { get; set; }

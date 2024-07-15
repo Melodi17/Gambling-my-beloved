@@ -37,6 +37,8 @@ public class StockOwnership
         foreach (Transaction transaction in this.Transactions
                      .OrderBy(transaction => transaction.Date))
         {
+            if (transaction.Quantity == 0 || transaction.Amount == 0) continue;
+            
             if (transaction.Type == TransactionType.Buy)
             {
                 totalInvestment += transaction.Amount;

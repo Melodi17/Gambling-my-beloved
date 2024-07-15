@@ -11,7 +11,7 @@
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.StockOwnership)
+            @Html.DisplayNameFor(model => model.StockOwnership.Stock)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Type)
@@ -25,15 +25,16 @@
         <th>
             @Html.DisplayNameFor(model => model.Date)
         </th>
-        <th></th>
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model)
+    @foreach (Transaction item in Model)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.StockOwnership.Id)
+                <a asp-action="Details" asp-route-id="@item.Id" class="no-dec text-dark">
+                    @item.StockOwnership.Stock.Symbol - @item.StockOwnership.Stock.Company.Name
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Type)
@@ -47,10 +48,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-            </td>
         </tr>
     }
     </tbody>
+    
+    <div>
+        @* next and previous buttons *@
+        @* <a asp-action="Index" asp-route-page="@(ViewData["PreviousPage"] ?? 1)" class="btn btn-primary @(ViewData["PreviousPage"] == null ? "disabled" : "")">Previous</a> *@
+        @* <a asp-action="Index" asp-route-page="@(ViewData["NextPage"] ?? 1)" class="btn btn-primary @(ViewData["NextPage"] == null ? "disabled" : "")">Next</a> *@
+    </div>
 </table>

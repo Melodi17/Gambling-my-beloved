@@ -27,10 +27,6 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // Set ViewData["StockEvents"] to 10 last StockEvents
-
-        // Assuming events already includes necessary data, we'll focus on optimizing the Companies query
-
         IQueryable<StockEvent> events = this._context.StockEvents
             .OrderByDescending(e => e.Date)
             .Take(5)
@@ -39,6 +35,7 @@ public class HomeController : Controller
             .ThenInclude(s => s.PriceHistory);
 
         List<StockEvent> eventsList = events.ToList();
+        
         IQueryable<Stock> stocks = this._context.Stocks
             .Include(s => s.Company)
             .Include(s => s.PriceHistory);
@@ -48,15 +45,16 @@ public class HomeController : Controller
         {
             string userId = this._userManager.GetUserId(User);
             user = this._context.Users
+                .Where(u => u.Id == userId)
                 .Include(u => u.Stocks)
-                .ThenInclude(s => s.Stock)
-                .ThenInclude(s => s.PriceHistory)
+                    .ThenInclude(s => s.Stock)
+                    .ThenInclude(s => s.PriceHistory)
                 .Include(u => u.Stocks)
-                .ThenInclude(s => s.Transactions)
+                    .ThenInclude(s => s.Transactions)
                 .Include(u => u.Stocks)
-                .ThenInclude(s => s.Stock)
-                .ThenInclude(s => s.Company)
-                .FirstOrDefault(u => u.Id == userId);
+                    .ThenInclude(s => s.Stock)
+                    .ThenInclude(s => s.Company)
+                .FirstOrDefault();
             
             List<(int quantity, Stock stock)> ownedStocks = user.GetOwnedStocks();
             ViewData["StockViewModels"] = ownedStocks
@@ -80,11 +78,6 @@ public class HomeController : Controller
         ViewData["EffectedStocks"] = eventsList.Select(x => x.EffectedStocks
             .Select(id => stocks.First(stock => stock.Id == id)).ToArray()).ToList();
 
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
         return View();
     }
 

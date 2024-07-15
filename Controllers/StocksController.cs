@@ -241,6 +241,13 @@ namespace Gambling_my_beloved.Controllers
                 Date = DateTime.Now
             };
             
+            if (quantity <= 0)
+            {
+                ViewData["Success"] = false;
+                ViewData["Message"] = "Invalid quantity";
+                return this.View(transaction);
+            }
+            
             if (type == TransactionType.Buy)
             {
                 if (totalCost > stockOwnership.Account.Balance)

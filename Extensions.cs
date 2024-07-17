@@ -42,6 +42,12 @@ public static class Extensions
             .Replace("(", "-")
             .Replace(")", "");
     }
+    
+    public static IEnumerable<T> Lossy<T>(this IEnumerable<T> enumerable, int lossRate)
+    {
+        // return items, but skip some
+        return enumerable.Where((_, i) => i % lossRate == 0);
+    }
 }
 
 public static class Utils

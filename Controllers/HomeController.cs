@@ -30,7 +30,7 @@ public class HomeController : Controller
         IQueryable<StockEvent> events = this._context.StockEvents
             .OrderByDescending(e => e.Date)
             .Take(5);
-        
+
         List<StockEvent> eventsList = events.ToList();
 
         // var events = this._context.StockEvents
@@ -74,7 +74,8 @@ public class HomeController : Controller
                 .ThenInclude(s => s.Stock)
                 .ThenInclude(s => s.PriceHistory
                     .OrderByDescending(p => p.Date)
-                    .Take(100))
+                    .Take(100)
+                )
                 .Include(u => u.Stocks)
                 .ThenInclude(s => s.Transactions)
                 .Include(u => u.Stocks)
@@ -98,6 +99,26 @@ public class HomeController : Controller
                     { Date = p.Date, Price = p.Price, PriceText = p.Price.ToCurrency() })
             }));
         }
+
+        ViewData["Leaderboard"] = this._context.Users
+            .Include(u => u.Stocks)
+            .ThenInclude(u => u.Transactions)
+            .Include(u => u.Stocks)
+            .ThenInclude(u => u.Stock)
+            .AsEnumerable()
+            .Select(u => new UserViewModel
+            {
+                Id = u.Id,
+                UserName = u.UserName,
+                Email = u.Email,
+                Balance = u.Balance,
+                NetWorth = u.GetNetWorth(),
+                Shares = u.GetOwnedStocks().Count
+            })
+            .OrderByDescending(u => u.NetWorth)
+            .Take(5)
+            .ToList();
+
 
         ViewData["User"] = user;
 

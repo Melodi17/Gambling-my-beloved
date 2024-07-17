@@ -15,13 +15,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHostedService<RandomEventService>();
-builder.Services.AddHostedService<RealStockSyncService>();
+builder.Services.AddHostedService<StockBindService>();
 
 WebApplication app = builder.Build();
 

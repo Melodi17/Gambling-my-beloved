@@ -32,7 +32,7 @@
     {
         <tr>
             <td>
-                <a asp-action="Details" asp-route-id="@item.Id" class="no-dec text-dark">
+                <a asp-action="Details" asp-controller="Stocks" asp-route-id="@item.StockOwnership.Stock.Id" class="no-dec text-dark">
                     @item.StockOwnership.Stock.Symbol - @item.StockOwnership.Stock.Company.Name
                 </a>
             </td>

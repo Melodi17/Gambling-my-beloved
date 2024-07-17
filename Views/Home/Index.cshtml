@@ -56,7 +56,7 @@
                         </dd>
                     </dl>
                 </div>
-                
+
                 <div class="col-12">
                     <div id="chartContainer" style="height: 300px; width: 100%;"></div>
                     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
@@ -136,6 +136,66 @@
                 </div>
             </div>
         }
+        else
+        {
+            <h2 class="display-5">Statistics</h2>
+            <hr/>
+
+            <p class="lead">Please <a asp-action="Login" asp-controller="Account">login</a> to view your statistics.</p>
+
+            <div class="spacer" style="height: 20px;"></div>
+        }
+
+        <h2 class="display-5">Leaderboard</h2>
+        <hr/>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Net Worth
+                </th>
+                <th>
+                    Balance
+                </th>
+                <th>
+                    Shares
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                int i = 0;
+            }
+            @foreach (UserViewModel uvm in (IEnumerable<UserViewModel>)ViewData["LeaderBoard"]!)
+            {
+                <tr>
+                    <td>
+                        @(i + 1)
+                    </td>
+                    <td>
+                        @uvm.UserName
+                    </td>
+                    <td>
+                        @uvm.NetWorth.ToCurrency()
+                    </td>
+                    <td>
+                        @uvm.Balance.ToCurrency()
+                    </td>
+                    <td>
+                        @uvm.Shares.ToString("N0")
+                    </td>
+                </tr>
+                i++;
+            }
+            </tbody>
+        </table>
     </div>
 
     <div class="col">
@@ -144,8 +204,8 @@
 
         <div class="row" style="overflow-y: scroll; height: 70vh;">
             @foreach (var item in ((IEnumerable<StockEvent>)ViewData["StockEvents"])!
-                .Zip((IEnumerable<Stock[]>)ViewData["EffectedStocks"]!,
-                    (stockEvent, stocks) => new { StockEvent = stockEvent, Stocks = stocks }))
+                      .Zip((IEnumerable<Stock[]>)ViewData["EffectedStocks"]!,
+                          (stockEvent, stocks) => new { StockEvent = stockEvent, Stocks = stocks }))
             {
                 <div class="col-12">
                     <div class="card m-2 ms-0">

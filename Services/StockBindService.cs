@@ -1,10 +1,11 @@
 ﻿using Gambling_my_beloved.Data;
 using Gambling_my_beloved.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Gambling_my_beloved.Services;
 
-public class RealStockSyncService : IHostedService, IDisposable
+public class StockBindService : IHostedService, IDisposable
 {
     private readonly ILogger<RandomEventService> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
@@ -12,7 +13,7 @@ public class RealStockSyncService : IHostedService, IDisposable
 
     private Dictionary<int, decimal> _stockPrices = new();
 
-    public RealStockSyncService(ILogger<RandomEventService> logger, IServiceScopeFactory scopeFactory)
+    public StockBindService(ILogger<RandomEventService> logger, IServiceScopeFactory scopeFactory)
     {
         this._logger = logger;
 
@@ -34,20 +35,23 @@ public class RealStockSyncService : IHostedService, IDisposable
         using IServiceScope scope = this._scopeFactory.CreateScope();
         ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        foreach (StockBinding stockBinding in dbContext.StockBindings
-                     .Where(binding => binding.Type == BindingType.RealStock)
-                     .Include(x => x.Stock)
-                     .ThenInclude(x => x.Company)
-                     .Include(x=>x.Stock)
-                     .ThenInclude(x=>x.PriceHistory))
+        IEnumerable<StockBinding> stockBindings = dbContext.StockBindings
+            .Include(x => x.Stock)
+            .ThenInclude(x => x.Company)
+            .Include(x => x.Stock)
+            .ThenInclude(x => x.PriceHistory
+                .OrderByDescending(p => p.Date)
+                .Take(2));
+        
+        foreach (StockBinding stockBinding in stockBindings.Where(binding => binding.Type == BindingType.RealStock))
         {
             Stock stock = stockBinding.Stock;
-            
+
             string[] stockInfo = stockBinding.BindTarget.Split(':');
             string stockSymbol = stockInfo[0];
             string stockExchange = stockInfo[1];
             decimal price = Utils.GetRealStockPrice(stockSymbol, stockExchange);
-            
+
             if (!_stockPrices.ContainsKey(stock.Id))
                 _stockPrices.Add(stock.Id, price);
             else if (_stockPrices[stock.Id] == price)

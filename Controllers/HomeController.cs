@@ -95,7 +95,9 @@ public class HomeController : Controller
             {
                 Symbol = s.stock.Symbol,
                 Color = s.stock.Color,
-                History = s.stock.PriceHistory.Select(p => new
+                History = s.stock.PriceHistory
+                    .Where(p => p.Date > DateTime.Now.AddDays(-1))
+                    .Select(p => new
                     { Date = p.Date, Price = p.Price, PriceText = p.Price.ToCurrency() })
             }));
         }

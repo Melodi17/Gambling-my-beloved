@@ -53,7 +53,7 @@ public static class Extensions
 public static class Utils
 {
     private static WebClient _client = new();
-    public static decimal GetRealStockPrice(string stock, string stockExchange)
+    public static decimal? GetRealStockPrice(string stock, string stockExchange)
     {
         try
         {
@@ -66,11 +66,11 @@ public static class Utils
             if (match.Success)
                 return decimal.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
         
-            return 0;
+            return null;
         }
         catch (Exception)
         {
-            return 0;
+            return null;
         }
     }
 }

@@ -71,8 +71,15 @@ public class Stock
         
         decimal lastPrice = priceHistory.Skip(1).First().Price;
         decimal currentPrice = priceHistory.First().Price;
-        
-        return Math.Round((currentPrice - lastPrice) / lastPrice * 100, 2);
+
+        try
+        {
+            return Math.Round((currentPrice - lastPrice) / lastPrice * 100, 2);
+        }
+        catch (DivideByZeroException)
+        {
+            return 0;
+        }
     }
     
     public decimal GetPriceChange(DateTime? date = null)

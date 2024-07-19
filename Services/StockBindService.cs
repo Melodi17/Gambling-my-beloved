@@ -50,7 +50,12 @@ public class StockBindService : IHostedService, IDisposable
             string[] stockInfo = stockBinding.BindTarget.Split(':');
             string stockSymbol = stockInfo[0];
             string stockExchange = stockInfo[1];
-            decimal price = Utils.GetRealStockPrice(stockSymbol, stockExchange);
+            decimal? priceN = Utils.GetRealStockPrice(stockSymbol, stockExchange);
+            
+            if (priceN == null)
+                continue;
+            
+            decimal price = priceN.Value;
 
             if (!_stockPrices.ContainsKey(stock.Id))
                 _stockPrices.Add(stock.Id, price);

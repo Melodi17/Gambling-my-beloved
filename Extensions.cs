@@ -52,17 +52,25 @@ public static class Extensions
 
 public static class Utils
 {
+    private static WebClient _client = new();
     public static decimal GetRealStockPrice(string stock, string stockExchange)
     {
-        string url = $"https://www.google.com/finance/quote/{stock}:{stockExchange}";
-        string regex = "data-last-price=\"(.+?)\"";
+        try
+        {
+            string url = $"https://www.google.com/finance/quote/{stock}:{stockExchange}";
+            string regex = "data-last-price=\"(.+?)\"";
         
-        string html = new WebClient().DownloadString(url);
-        Match match = Regex.Match(html, regex);
+            string html = _client.DownloadString(url);
+            Match match = Regex.Match(html, regex);
         
-        if (match.Success)
-            return decimal.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+            if (match.Success)
+                return decimal.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
         
-        return 0;
+            return 0;
+        }
+        catch (Exception)
+        {
+            return 0;
+        }
     }
 }

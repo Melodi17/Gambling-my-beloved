@@ -22,7 +22,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://0.0.0.0:5500",
+      "applicationUrl": "http://0.0.0.0:6600",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       }

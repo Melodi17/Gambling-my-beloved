@@ -1,1 +1,1 @@
-﻿dotnet run --launch-profile "http-prod" --configuration Release
+dotnet run --launch-profile "http-prod" --configuration Release

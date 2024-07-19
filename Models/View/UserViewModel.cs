@@ -8,5 +8,5 @@ public class UserViewModel
     
     public decimal Balance { get; set; }
     public decimal NetWorth { get; set; }
-    public int Shares { get; set; }
+    public int TotalStocks { get; set; }
 }

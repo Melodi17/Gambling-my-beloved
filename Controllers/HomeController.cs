@@ -115,7 +115,7 @@ public class HomeController : Controller
                 Email = u.Email,
                 Balance = u.Balance,
                 NetWorth = u.GetNetWorth(),
-                Shares = u.GetOwnedStocks().Count
+                TotalStocks = u.GetOwnedStocks().Sum(x => x.quantity)
             })
             .OrderByDescending(u => u.NetWorth)
             .Take(5)

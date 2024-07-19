@@ -141,7 +141,7 @@
             <h2 class="display-5">Statistics</h2>
             <hr/>
 
-            <p class="lead">Please <a asp-action="Login" asp-controller="Account">login</a> to view your statistics.</p>
+            <p class="lead">Please <a asp-area="Identity" asp-page="/Account/Login">login</a> to view your statistics.</p>
 
             <div class="spacer" style="height: 20px;"></div>
         }
@@ -165,7 +165,7 @@
                     Balance
                 </th>
                 <th>
-                    Shares
+                    Total stocks
                 </th>
             </tr>
             </thead>
@@ -189,7 +189,7 @@
                         @uvm.Balance.ToCurrency()
                     </td>
                     <td>
-                        @uvm.Shares.ToString("N0")
+                        @uvm.TotalStocks.ToString("N0")
                     </td>
                 </tr>
                 i++;

@@ -106,11 +106,13 @@ td {
     color: #0d6efd;
     border: 1px solid #0d6efd;
 }
+
 .nav-pills-outline .nav-link {
     background: 0 0;
     border: 1px solid transparent;
     border-radius: .25rem;
 }
+
 .nav-link {
     display: block;
     padding: .5rem 1rem;
